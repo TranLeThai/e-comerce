@@ -14,7 +14,7 @@
 
         <!-- Activity đầu tiên mở khi chạy app -->
         <activity
-            android:name=".MainActivity"
+            android:name=".home.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,13 +23,13 @@
         </activity>
 
         <!-- Trang đăng nhập -->
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".auth.LoginActivity" />
 
         <!-- Trang đăng ký -->
-        <activity android:name=".RegisterActivity" />
+        <activity android:name=".auth.RegisterActivity" />
 
         <!-- Trang chủ -->
-        <activity android:name=".HomeActivity" />
+        <activity android:name=".home.HomeActivity" />
 
     </application>
 

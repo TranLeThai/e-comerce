@@ -1,4 +1,4 @@
-package com.example.e_comerce;
+package com.example.e_comerce.auth;
 
 import android.os.Bundle;
 import android.widget.Button;
@@ -7,6 +7,11 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Toast;
 import android.content.Intent;
+
+import com.example.e_comerce.home.HomeActivity;
+import com.example.e_comerce.R;
+import com.example.e_comerce.helper.UserHelper;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;

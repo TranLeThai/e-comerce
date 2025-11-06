@@ -1,11 +1,9 @@
-package com.example.e_comerce; // <-- Thay đổi package name này cho đúng với project của bạn
+package com.example.e_comerce.home; // <-- Thay đổi package name này cho đúng với project của bạn
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,10 +11,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.e_comerce.R;
+
 public class HomeActivity extends AppCompatActivity {
 
     // Khai báo các View mà chúng ta cần tương tác
-    private TextView tvLocation;
     private EditText edtSearch;
     // Bạn có thể khai báo thêm các View khác ở đây nếu cần, ví dụ:
     // private LinearLayout categoryChicken, categoryBurger, ...
@@ -30,7 +29,6 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         // Ánh xạ các View từ file layout XML vào các biến Java
-        tvLocation = findViewById(R.id.tvLocation);
         edtSearch = findViewById(R.id.edtSearch);
 
         // (Optional) Xử lý padding cho màn hình tai thỏ, giọt nước...
@@ -46,9 +44,6 @@ public class HomeActivity extends AppCompatActivity {
 
         // === Thêm logic cho các View ở đây ===
 
-        // Ví dụ: Lấy vị trí thực tế của người dùng và cập nhật lên TextView
-        updateUserLocation("123 Main St, Anytown");
-
         // Ví dụ: Thêm sự kiện click cho các danh mục (dù chúng không có ID)
         // Bạn có thể tìm chúng thông qua layout cha
         setupCategoryClicks();
@@ -61,16 +56,6 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Một hàm ví dụ để cập nhật vị trí người dùng lên giao diện.
-     *
-     * @param location Địa chỉ của người dùng.
-     */
-    private void updateUserLocation(String location) {
-        if (tvLocation != null) {
-            tvLocation.setText(location);
-        }
-    }
 
     /**
      * Hàm ví dụ để thiết lập sự kiện click cho các danh mục.

@@ -1,4 +1,4 @@
-package com.example.e_comerce;
+package com.example.e_comerce.helper;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -22,7 +22,6 @@ public class UserHelper {
             return new JSONArray();
         }
     }
-
     // Lưu danh sách user
     public static void saveUsers(Context context, JSONArray users) {
         SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
