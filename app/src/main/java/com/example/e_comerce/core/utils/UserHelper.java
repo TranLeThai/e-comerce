@@ -1,4 +1,4 @@
-package com.example.e_comerce.helper;
+package com.example.e_comerce.core.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#FFF5F0"
     android:id="@+id/main"
-    tools:context=".home.MainActivity"
+    tools:context=".module_customer.main.MainActivity"
     android:scrollbars="vertical">
 
 

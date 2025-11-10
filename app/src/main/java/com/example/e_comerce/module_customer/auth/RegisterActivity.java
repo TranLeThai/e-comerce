@@ -1,4 +1,4 @@
-package com.example.e_comerce.auth;
+package com.example.e_comerce.module_customer.auth;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
@@ -8,7 +8,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.e_comerce.R;
-import com.example.e_comerce.helper.UserHelper;
+import com.example.e_comerce.core.utils.UserHelper;
 
 public class RegisterActivity extends AppCompatActivity {
 

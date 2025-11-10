@@ -14,7 +14,7 @@
 
         <!-- Activity đầu tiên mở khi chạy app -->
         <activity
-            android:name=".auth.LoginActivity"
+            android:name=".module_customer.auth.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,10 +23,10 @@
         </activity>
 
         <!-- Trang đăng ký -->
-        <activity android:name=".auth.RegisterActivity" />
+        <activity android:name=".module_customer.auth.RegisterActivity" />
 
         <!-- Trang chủ -->
-        <activity android:name=".home.HomeActivity" />
+        <activity android:name=".module_customer.main.MainActivity" />
 
     </application>
 

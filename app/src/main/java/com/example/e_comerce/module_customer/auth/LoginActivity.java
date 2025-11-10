@@ -1,4 +1,4 @@
-package com.example.e_comerce.auth;
+package com.example.e_comerce.module_customer.auth;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
@@ -8,8 +8,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.e_comerce.R;
-import com.example.e_comerce.auth.RegisterActivity;
-import com.example.e_comerce.home.HomeActivity;
+import com.example.e_comerce.module_customer.main.MainActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -50,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
                         .apply();
 
                 // 3️⃣ Chuyển sang trang Home
-                startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 finish(); // Đóng màn hình login để không quay lại
             } else {
                 Toast.makeText(this, "Sai tài khoản hoặc mật khẩu!", Toast.LENGTH_SHORT).show();

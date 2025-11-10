@@ -1,7 +1,7 @@
-package com.example.e_comerce.home;
+package com.example.e_comerce.module_customer.main;
 
-import com.example.e_comerce.product.MonAn;
-import com.example.e_comerce.product.MonAnAdapter;
+import com.example.e_comerce.module_customer.product.MonAn;
+import com.example.e_comerce.module_customer.product.MonAnAdapter;
 
 import android.os.Bundle;
 import android.view.View;
@@ -20,7 +20,7 @@ import com.example.e_comerce.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     private EditText edtSearch;
     private ListView listView;
@@ -60,7 +60,7 @@ public class HomeActivity extends AppCompatActivity {
         // Bắt sự kiện click item trong list
         listView.setOnItemClickListener((parent, view, position, id) -> {
             MonAn mon = dsMonAn.get(position);
-            Toast.makeText(this, "Bạn chọn: " + mon.getTen(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Bạn chọn: " + mon.getName(), Toast.LENGTH_SHORT).show();
         });
 
         // Ví dụ xử lý click ảnh nhà hàng
