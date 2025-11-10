@@ -1,69 +1,64 @@
 package com.example.e_comerce.auth;
 
+import androidx.appcompat.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Toast;
-import android.content.Intent;
 
-import com.example.e_comerce.home.HomeActivity;
 import com.example.e_comerce.R;
-import com.example.e_comerce.helper.UserHelper;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONException;
+import com.example.e_comerce.auth.RegisterActivity;
+import com.example.e_comerce.home.HomeActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText username, password;
-    Button loginBtn, registerBtn;
-    TextView titleText;
+    EditText edtUsername, edtPassword;
+    Button btnLogin, btnRegister;
+    long backPressedTime; // Biến dùng cho double back exit
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Liên kết các component
-        username = findViewById(R.id.username);
-        password = findViewById(R.id.password);
-        loginBtn = findViewById(R.id.loginBtn);
-        registerBtn = findViewById(R.id.registerBtn);
-        titleText = findViewById(R.id.titleText);
+        // Ánh xạ view
+        edtUsername = findViewById(R.id.username);
+        edtPassword = findViewById(R.id.password);
+        btnLogin = findViewById(R.id.loginBtn);
+        btnRegister = findViewById(R.id.registerBtn);
 
-        // Xử lý sự kiện nút
-        loginBtn.setOnClickListener(v -> {
-            String userInput = username.getText().toString();
-            String passInput = password.getText().toString();
+        // --- Sự kiện đăng nhập ---
+        btnLogin.setOnClickListener(v -> {
+            String user = edtUsername.getText().toString().trim();
+            String pass = edtPassword.getText().toString().trim();
 
-            JSONArray users = UserHelper.getUsers(this);
-
-            boolean isValid = false;
-
-            for (int i = 0; i < users.length(); i++) {
-                try {
-                    JSONObject user = users.getJSONObject(i);
-                    if (user.getString("username").equals(userInput) &&
-                            user.getString("password").equals(passInput)) {
-                        isValid = true;
-                        break;
-                    }
-                } catch (JSONException ignored) {}
+            // 1️⃣ Kiểm tra ô trống
+            if (user.isEmpty() || pass.isEmpty()) {
+                Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
+                return;
             }
 
-            if (isValid) {
+            // 2️⃣ Kiểm tra tài khoản mẫu
+            if (user.equals("admin") && pass.equals("123456")) {
                 Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+
+                // (Tùy chọn) Lưu trạng thái đăng nhập
+                getSharedPreferences("LOGIN_PREF", MODE_PRIVATE)
+                        .edit()
+                        .putBoolean("isLoggedIn", true)
+                        .apply();
+
+                // 3️⃣ Chuyển sang trang Home
                 startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-                finish();
+                finish(); // Đóng màn hình login để không quay lại
             } else {
-                Toast.makeText(this, "Sai username hoặc password!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Sai tài khoản hoặc mật khẩu!", Toast.LENGTH_SHORT).show();
             }
         });
 
-        registerBtn.setOnClickListener(v -> {
+        // --- Sự kiện mở trang đăng ký ---
+        btnRegister.setOnClickListener(v -> {
             startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
         });
     }

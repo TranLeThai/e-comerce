@@ -14,16 +14,13 @@
 
         <!-- Activity đầu tiên mở khi chạy app -->
         <activity
-            android:name=".home.MainActivity"
+            android:name=".auth.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!-- Trang đăng nhập -->
-        <activity android:name=".auth.LoginActivity" />
 
         <!-- Trang đăng ký -->
         <activity android:name=".auth.RegisterActivity" />
