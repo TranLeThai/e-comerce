@@ -1,76 +1,63 @@
 package com.example.e_comerce.module_customer.auth;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.e_comerce.R;
+import com.example.e_comerce.core.data.prefs.PrefManager;
 import com.example.e_comerce.module_admin.AdminMainActivity;
+import com.example.e_comerce.module_customer.cart.CartActivity;
 import com.example.e_comerce.module_customer.main.MainActivity;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText edtUsername, edtPassword;
-    Button btnLogin, btnRegister;
-    long backPressedTime; // Biến dùng cho double back exit
+    private TextInputEditText editEmail, editPassword;
+    private MaterialButton btnLogin;
+    private PrefManager prefManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.customer_activity_login);
+        setContentView(R.layout.activity_login);
 
-        // Ánh xạ view
-        edtUsername = findViewById(R.id.username);
-        edtPassword = findViewById(R.id.password);
-        btnLogin = findViewById(R.id.loginBtn);
-        btnRegister = findViewById(R.id.registerBtn);
+        initViews();
+        prefManager = new PrefManager(this);
+        setupClickListeners();
+    }
 
-        // event login
-        btnLogin.setOnClickListener(v -> {
-            String user = edtUsername.getText().toString().trim();
-            String pass = edtPassword.getText().toString().trim();
+    private void initViews() {
+        editEmail = findViewById(R.id.editEmail);
+        editPassword = findViewById(R.id.editPassword);
+        btnLogin = findViewById(R.id.btnLogin);
+    }
 
-            SharedPreferences pref = getSharedPreferences("UserData", MODE_PRIVATE);
+    private void setupClickListeners() {
+        btnLogin.setOnClickListener(v -> performLogin());
+    }
 
-            if (user.isEmpty() || pass.isEmpty()) {
-                Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
-                return;
-            }
+    private void performLogin() {
+        String email = editEmail.getText().toString().trim();
+        String password = editPassword.getText().toString().trim();
 
-            if (user.equals("admin") && pass.equals("123456")) {
-                Toast.makeText(this, "Xin chào Admin", Toast.LENGTH_SHORT).show();
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-                getSharedPreferences("LOGIN_PREF", MODE_PRIVATE)
-                        .edit()
-                        .putBoolean("isLoggedIn", true)
-                        .apply();
-
-                startActivity(new Intent(LoginActivity.this, AdminMainActivity.class));
-                finish(); // Đóng màn hình login để không quay lại
-            }
-            String savedPassword = pref.getString("user_" + user, null);
-            if (savedPassword != null && savedPassword.equals(pass)) {
-                Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-
-                getSharedPreferences("LOGIN_PREF", MODE_PRIVATE)
-                        .edit()
-                        .putBoolean("isLoggedIn", true)
-                        .apply();
-
-
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                finish();
-            } else {
-                Toast.makeText(this, "Sai tài khoản hoặc mật khẩu!", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // sign up event
-        btnRegister.setOnClickListener(v -> {
-            startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
-        });
+        // Demo accounts
+        if ("admin@gmail.com".equals(email) && "123".equals(password)) {
+            prefManager.saveToken("admin_token");
+            prefManager.saveRole("admin");
+            startActivity(new Intent(this, AdminMainActivity.class));
+        } else if ("user@gmail.com".equals(email) && "123".equals(password)) {
+            prefManager.saveToken("user_token");
+            prefManager.saveRole("customer");
+            startActivity(new Intent(this, MainActivity.class));
+        } else {
+            Toast.makeText(this, "Email hoặc mật khẩu không đúng", Toast.LENGTH_SHORT).show();
+        }
     }
 }

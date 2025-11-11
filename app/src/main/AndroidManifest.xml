@@ -2,6 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Quyền cần thiết -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Nếu cần lưu ảnh, giữ lại (Android 13+ cần thêm quyền khác) -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -10,9 +17,10 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Ecomerce">
+        android:theme="@style/Theme.Ecomerce"
+        tools:targetApi="31">
 
-        <!-- Activity đầu tiên mở khi chạy app -->
+        <!-- 1. LOGIN - MÀN HÌNH ĐẦU TIÊN -->
         <activity
             android:name=".module_customer.auth.LoginActivity"
             android:exported="true">
@@ -22,16 +30,25 @@
             </intent-filter>
         </activity>
 
-        <!-- Trang đăng ký -->
-        <activity android:name=".module_customer.auth.RegisterActivity" />
+        <!-- 2. ĐĂNG KÝ -->
+        <activity
+            android:name=".module_customer.auth.RegisterActivity"
+            android:exported="false" />
 
-        <!-- Trang chủ -->
-        <activity android:name=".module_customer.main.MainActivity" />
+        <!-- 3. TRANG CHỦ CUSTOMER -->
+        <activity
+            android:name=".module_customer.main.MainActivity"
+            android:exported="false" />
 
-        <uses-permission android:name="android.permission.INTERNET"/>
-        <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-        <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+        <!-- 4. GIỎ HÀNG -->
+        <activity
+            android:name=".module_customer.cart.CartActivity"
+            android:exported="false" />
 
+        <!-- 5. ADMIN PANEL (sau này) -->
+        <activity
+            android:name=".module_admin.AdminMainActivity"
+            android:exported="false" />
 
     </application>
 

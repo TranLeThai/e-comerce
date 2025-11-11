@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+
 android {
     namespace = "com.example.e_comerce"
     compileSdk {
@@ -45,6 +46,14 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-//    compile 'com.github.bumptech.glide:glide:3.7.0';
-//    compile 'com.android.support:support-v4:23.1.1';
+
+    // === ROOM ===
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    // OkHttp (để log request/response)
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 }
