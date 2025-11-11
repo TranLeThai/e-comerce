@@ -10,7 +10,7 @@ import java.util.List;
 
 public class AdminFoodViewModel extends ViewModel {
 
-    private MutableLiveData<List<FoodItem>> foodList = new MutableLiveData<>();
+    private final MutableLiveData<List<FoodItem>> foodList = new MutableLiveData<>();
 
     public AdminFoodViewModel() {
         loadFoods();
@@ -18,6 +18,23 @@ public class AdminFoodViewModel extends ViewModel {
 
     public LiveData<List<FoodItem>> getAllFoods() {
         return foodList;
+    }
+
+    public void addFood(FoodItem food) {
+        List<FoodItem> curr = new ArrayList<>(foodList.getValue());
+        curr.add(food);
+        foodList.setValue(curr);
+    }
+
+    public void updateFood(FoodItem updatedFood) {
+        List<FoodItem> curr = new ArrayList<>(foodList.getValue());
+        for (int i = 0; i < curr.size(); i++) {
+            if (curr.get(i).getId().equals(updatedFood.getId())) {
+                curr.set(i, updatedFood);
+            }
+            break;
+        }
+        foodList.setValue(curr);
     }
 
     public void deleteFood(String foodId) {

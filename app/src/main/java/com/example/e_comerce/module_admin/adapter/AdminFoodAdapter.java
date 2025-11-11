@@ -36,7 +36,7 @@ public class AdminFoodAdapter extends ListAdapter<FoodItem, AdminFoodAdapter.Vie
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_admin_food, parent, false);
+                .inflate(R.layout.admin_item_food, parent, false);
         return new ViewHolder(view);
     }
 
