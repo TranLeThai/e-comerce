@@ -1,14 +1,14 @@
 // module_admin/AdminMainActivity.java
-package com.example.fooddelivery.module_admin;
+package com.example.e_comerce.module_admin;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import com.example.fooddelivery.R;
-import com.example.fooddelivery.databinding.ActivityAdminMainBinding;
+import com.example.e_comerce.R;
+import com.example.e_comerce.databinding.ActivityAdminMainBinding;
 import com.example.fooddelivery.module_admin.fragment.ManageFoodFragment;
-import com.example.fooddelivery.module_admin.fragment.ManageOrderFragment;
-import com.example.fooddelivery.module_admin.fragment.RevenueFragment;
+import com.example.e_comerce.module_admin.fragment.ManageOrderFragment;
+import com.example.e_comerce.module_admin.fragment.RevenueFragment;
 
 public class AdminMainActivity extends AppCompatActivity {
 

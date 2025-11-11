@@ -1,13 +1,14 @@
 package com.example.e_comerce.module_customer.auth;
 
-import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
+import androidx.appcompat.app.AppCompatActivity;
 import com.example.e_comerce.R;
+import com.example.e_comerce.module_admin.AdminMainActivity;
 import com.example.e_comerce.module_customer.main.MainActivity;
 
 public class LoginActivity extends AppCompatActivity {
@@ -27,36 +28,47 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.loginBtn);
         btnRegister = findViewById(R.id.registerBtn);
 
-        // --- Sự kiện đăng nhập ---
+        // event login
         btnLogin.setOnClickListener(v -> {
             String user = edtUsername.getText().toString().trim();
             String pass = edtPassword.getText().toString().trim();
 
-            // 1️⃣ Kiểm tra ô trống
+            SharedPreferences pref = getSharedPreferences("UserData", MODE_PRIVATE);
+
             if (user.isEmpty() || pass.isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // 2️⃣ Kiểm tra tài khoản mẫu
             if (user.equals("admin") && pass.equals("123456")) {
-                Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Xin chào Admin", Toast.LENGTH_SHORT).show();
 
-                // (Tùy chọn) Lưu trạng thái đăng nhập
                 getSharedPreferences("LOGIN_PREF", MODE_PRIVATE)
                         .edit()
                         .putBoolean("isLoggedIn", true)
                         .apply();
 
-                // 3️⃣ Chuyển sang trang Home
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                startActivity(new Intent(LoginActivity.this, AdminMainActivity.class));
                 finish(); // Đóng màn hình login để không quay lại
+            }
+            String savedPassword = pref.getString("user_" + user, null);
+            if (savedPassword != null && savedPassword.equals(pass)) {
+                Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+
+                getSharedPreferences("LOGIN_PREF", MODE_PRIVATE)
+                        .edit()
+                        .putBoolean("isLoggedIn", true)
+                        .apply();
+
+
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                finish();
             } else {
                 Toast.makeText(this, "Sai tài khoản hoặc mật khẩu!", Toast.LENGTH_SHORT).show();
             }
         });
 
-        // --- Sự kiện mở trang đăng ký ---
+        // sign up event
         btnRegister.setOnClickListener(v -> {
             startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
         });

@@ -31,6 +31,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    dataBinding {
+        enable = true
+    }
 }
 
 dependencies {
@@ -41,4 +45,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+//    compile 'com.github.bumptech.glide:glide:3.7.0';
+//    compile 'com.android.support:support-v4:23.1.1';
 }

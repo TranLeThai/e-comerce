@@ -1,5 +1,5 @@
 // module_admin/fragment/ManageFoodFragment.java
-package com.example.fooddelivery.module_admin.fragment;
+package com.example.e_comerce.module_admin.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,11 +9,11 @@ import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import com.example.fooddelivery.core.data.model.FoodItem;
-import com.example.fooddelivery.databinding.FragmentManageFoodBinding;
-import com.example.fooddelivery.module_admin.activity.AddEditFoodActivity;
-import com.example.fooddelivery.module_admin.adapter.AdminFoodAdapter;
-import com.example.fooddelivery.module_admin.viewmodel.AdminFoodViewModel;
+import com.example.e_comerce.core.data.model.FoodItem;
+import com.example.e_comerce.databinding.FragmentManageFoodBinding;
+import com.example.e_comerce.module_admin.activity.AddEditFoodActivity;
+import com.example.e_comerce.module_admin.adapter.AdminFoodAdapter;
+import com.example.e_comerce.module_admin.viewmodel.AdminFoodViewModel;
 
 public class ManageFoodFragment extends Fragment {
 
