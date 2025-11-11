@@ -1,7 +1,7 @@
 package com.example.e_comerce.module_customer.main;
 
-import com.example.e_comerce.module_customer.product.MonAn;
-import com.example.e_comerce.module_customer.product.MonAnAdapter;
+import com.example.e_comerce.core.data.model.FoodItem;
+import com.example.e_comerce.module_customer.menu.adapter.FoodItemAdapter;
 
 import android.os.Bundle;
 import android.view.View;
@@ -24,8 +24,8 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText edtSearch;
     private ListView listView;
-    private List<MonAn> dsMonAn;
-    private MonAnAdapter adapter;
+    private List<FoodItem> dsMonAn;
+    private FoodItemAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,18 +48,18 @@ public class MainActivity extends AppCompatActivity {
 
         // Tạo danh sách món ăn
         dsMonAn = new ArrayList<>();
-        dsMonAn.add(new MonAn("Pizza Hải Sản", "120.000đ", R.drawable.pizza));
-        dsMonAn.add(new MonAn("Burger Bò Phô Mai", "85.000đ", R.drawable.burger));
-        dsMonAn.add(new MonAn("Cơm Gà Xối Mỡ", "70.000đ", R.drawable.com_ga));
-        dsMonAn.add(new MonAn("Trà Sữa Trân Châu", "45.000đ", R.drawable.tra_sua));
+        dsMonAn.add(new FoodItem("Pizza Hải Sản", "120.000đ", R.drawable.pizza));
+        dsMonAn.add(new FoodItem("Burger Bò Phô Mai", "85.000đ", R.drawable.burger));
+        dsMonAn.add(new FoodItem("Cơm Gà Xối Mỡ", "70.000đ", R.drawable.com_ga));
+        dsMonAn.add(new FoodItem("Trà Sữa Trân Châu", "45.000đ", R.drawable.tra_sua));
 
         // Gán adapter
-        adapter = new MonAnAdapter(this, dsMonAn);
+        adapter = new FoodItemAdapter(this, dsMonAn);
         listView.setAdapter(adapter);
 
         // Bắt sự kiện click item trong list
         listView.setOnItemClickListener((parent, view, position, id) -> {
-            MonAn mon = dsMonAn.get(position);
+            FoodItem mon = dsMonAn.get(position);
             Toast.makeText(this, "Bạn chọn: " + mon.getName(), Toast.LENGTH_SHORT).show();
         });
 
