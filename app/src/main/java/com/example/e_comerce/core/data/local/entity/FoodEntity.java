@@ -1,12 +1,14 @@
 // core/data/local/entity/FoodEntity.java
 package com.example.e_comerce.core.data.local.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "foods")
 public class FoodEntity {
     @PrimaryKey
+    @NonNull
     private String id;
     private String name;
     private double price;

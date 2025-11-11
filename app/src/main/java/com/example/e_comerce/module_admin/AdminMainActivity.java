@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import com.example.e_comerce.R;
 import com.example.e_comerce.databinding.ActivityAdminMainBinding;
-import com.example.fooddelivery.module_admin.fragment.ManageFoodFragment;
+import com.example.e_comerce.module_admin.fragment.ManageFoodFragment;
 import com.example.e_comerce.module_admin.fragment.ManageOrderFragment;
 import com.example.e_comerce.module_admin.fragment.RevenueFragment;
 
