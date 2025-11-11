@@ -1,19 +1,19 @@
+// core/data/mapper/FoodMapper.java
 package com.example.e_comerce.core.data.mapper;
 
 import com.example.e_comerce.core.data.local.entity.FoodEntity;
 import com.example.e_comerce.core.data.model.FoodItem;
-
-import java.util.List;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FoodMapper {
+
     public static FoodEntity toEntity(FoodItem model) {
         return new FoodEntity(
                 model.getId(),
                 model.getName(),
                 model.getPrice(),
-                model.getImage(),
+                model.getImageRes(),  // SỬA: getImageRes()
                 model.getCategory()
         );
     }
@@ -29,7 +29,7 @@ public class FoodMapper {
                 entity.getId(),
                 entity.getName(),
                 entity.getPrice(),
-                entity.getImage(),
+                entity.getImageRes(),  // SỬA: getImageRes()
                 entity.getCategory()
         );
     }

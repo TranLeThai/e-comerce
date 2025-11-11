@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         edtSearch = findViewById(R.id.edtSearch);
         listView = findViewById(R.id.listMonAn);
 
-        // Xử lý padding cho tai thỏ nếu cần
+        // Xử lý padding cho tai thỏ
         View mainLayout = findViewById(R.id.main);
         if (mainLayout != null) {
             ViewCompat.setOnApplyWindowInsetsListener(mainLayout, (v, insets) -> {
@@ -46,34 +46,29 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        // Tạo danh sách món ăn
+        // TẠO DỮ LIỆU MẪU – ĐÚNG 100% VỚI FoodItem
         dsMonAn = new ArrayList<>();
-        dsMonAn.add(new FoodItem("Pizza Hải Sản", "120.000đ", R.drawable.pizza));
-        dsMonAn.add(new FoodItem("Burger Bò Phô Mai", "85.000đ", R.drawable.burger));
-        dsMonAn.add(new FoodItem("Cơm Gà Xối Mỡ", "70.000đ", R.drawable.com_ga));
-        dsMonAn.add(new FoodItem("Trà Sữa Trân Châu", "45.000đ", R.drawable.tra_sua));
+        dsMonAn.add(new FoodItem("1", "Pizza Hải Sản", 120000, R.drawable.pizza, "Pizza"));
+        dsMonAn.add(new FoodItem("2", "Burger Bò Phô Mai", 85000, R.drawable.burger, "Burger"));
+        dsMonAn.add(new FoodItem("3", "Cơm Gà Xối Mỡ", 70000, R.drawable.com_ga, "Cơm"));
+        dsMonAn.add(new FoodItem("4", "Trà Sữa Trân Châu", 45000, R.drawable.tra_sua, "Đồ uống"));
 
-        // Gán adapter
+        // GÁN ADAPTER – KHÔNG CẦN LISTENER
         adapter = new FoodItemAdapter(this, dsMonAn);
         listView.setAdapter(adapter);
 
-        // Bắt sự kiện click item trong list
+        // CLICK ITEM → HIỂN THỊ TÊN
         listView.setOnItemClickListener((parent, view, position, id) -> {
             FoodItem mon = dsMonAn.get(position);
             Toast.makeText(this, "Bạn chọn: " + mon.getName(), Toast.LENGTH_SHORT).show();
         });
 
-        // Ví dụ xử lý click ảnh nhà hàng
+        // CLICK ẢNH NHÀ HÀNG
         ImageView restaurantImage = findViewById(R.id.ivRestaurantImage);
         if (restaurantImage != null) {
             restaurantImage.setOnClickListener(v ->
                     Toast.makeText(this, "Clicked on Pizza Stories", Toast.LENGTH_SHORT).show()
             );
         }
-    }
-
-    // Hàm ví dụ xử lý click danh mục
-    private void setupCategoryClicks() {
-        // Thêm sau nếu có category
     }
 }

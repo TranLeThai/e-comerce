@@ -2,6 +2,7 @@ package com.example.e_comerce.module_customer.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.e_comerce.R;
@@ -15,7 +16,7 @@ import com.google.android.material.textfield.TextInputEditText;
 public class LoginActivity extends AppCompatActivity {
 
     private TextInputEditText editEmail, editPassword;
-    private MaterialButton btnLogin;
+    private Button btnLogin;
     private PrefManager prefManager;
 
     @Override
