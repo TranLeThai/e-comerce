@@ -1,4 +1,3 @@
-// module_admin/fragment/ManageFoodFragment.java
 package com.example.e_comerce.module_admin.fragment;
 
 import android.content.Intent;
@@ -64,5 +63,11 @@ public class ManageFoodFragment extends Fragment {
         binding.fabAdd.setOnClickListener(v -> {
             startActivity(new Intent(requireContext(), AddEditFoodActivity.class));
         });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }
