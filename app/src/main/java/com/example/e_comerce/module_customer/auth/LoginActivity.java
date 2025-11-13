@@ -1,6 +1,7 @@
 package com.example.e_comerce.module_customer.auth;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.Toast;
@@ -40,25 +41,40 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void performLogin() {
-        String email = editEmail.getText().toString().trim();
+        String username = editEmail.getText().toString().trim();
         String password = editPassword.getText().toString().trim();
 
-        if (email.isEmpty() || password.isEmpty()) {
+        if (username.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Demo accounts
-        if ("admin@gmail.com".equals(email) && "123".equals(password)) {
-            prefManager.saveToken("admin_token");
-            prefManager.saveRole("admin");
+
+        SharedPreferences pref =  getSharedPreferences("UserData", MODE_PRIVATE);
+        String savedUsername = pref.getString("username", "");
+        String savedPassword = pref.getString("password", "");
+
+        if (username.equals("amdin") && password.equals("123456")) {
+            getSharedPreferences("LOGIN_PREF", MODE_PRIVATE)
+                    .edit()
+//                    .isBoolean("isLOGGIN", true)
+                    .apply();
             startActivity(new Intent(this, AdminMainActivity.class));
-        } else if ("user@gmail.com".equals(email) && "123".equals(password)) {
-            prefManager.saveToken("user_token");
-            prefManager.saveRole("customer");
+            finish();
+        }
+        if (username.equals(savedUsername) && password.equals(savedPassword)) {
+            Toast.makeText(this,"Đăng nhập thành công: ", Toast.LENGTH_SHORT).show();
+
+            getSharedPreferences("LOGIN_PREF", MODE_PRIVATE)
+                    .edit()
+//                    .isBoolean("isLOGGIN", true)
+                    .apply();
             startActivity(new Intent(this, MainActivity.class));
-        } else {
-            Toast.makeText(this, "Email hoặc mật khẩu không đúng", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
+        else {
+            Toast.makeText(this, "Sai tài khoản hoặc mật khẩu", Toast.LENGTH_SHORT).show();
         }
     }
 }

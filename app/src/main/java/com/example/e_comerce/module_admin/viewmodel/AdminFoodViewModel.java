@@ -1,4 +1,3 @@
-// module_admin/viewmodel/AdminFoodViewModel.java
 package com.example.e_comerce.module_admin.viewmodel;
 
 import androidx.lifecycle.LiveData;
@@ -6,10 +5,10 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.example.e_comerce.core.data.model.FoodItem;
 import java.util.ArrayList;
+import com.example.e_comerce.R;
 import java.util.List;
 
 public class AdminFoodViewModel extends ViewModel {
-
     private final MutableLiveData<List<FoodItem>> foodList = new MutableLiveData<>();
 
     public AdminFoodViewModel() {
@@ -44,10 +43,10 @@ public class AdminFoodViewModel extends ViewModel {
     }
 
     private void loadFoods() {
-        // TODO: Gọi API hoặc Room
+
         List<FoodItem> dummy = new ArrayList<>();
-        dummy.add(new FoodItem("1", "Phở bò", 55000, "https://example.com/pho.jpg"));
-        dummy.add(new FoodItem("2", "Bún chả", 45000, "https://example.com/bun.jpg"));
+        dummy.add(new FoodItem("1", "Phở bò", 55000, R.drawable.burger));
+        dummy.add(new FoodItem("2", "Bún chả", 45000, R.drawable.com_ga));
         foodList.setValue(dummy);
     }
 }

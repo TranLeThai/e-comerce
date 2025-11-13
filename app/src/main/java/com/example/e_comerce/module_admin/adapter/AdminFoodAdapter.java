@@ -62,7 +62,7 @@ public class AdminFoodAdapter extends ListAdapter<FoodItem, AdminFoodAdapter.Vie
         public void bind(FoodItem food) {
             tvName.setText(food.getName());
             tvPrice.setText(String.format("%,.0f đ", food.getPrice()));
-            Glide.with(itemView.getContext()).load(food.getImageUrl()).into(imgFood);
+            imgFood.setImageResource(food.getImageResId());
 
             btnEdit.setOnClickListener(v -> {
                 if (listener != null) listener.onEditClick(food);
