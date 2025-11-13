@@ -8,24 +8,25 @@ public class FoodItem {
     private String name;
     private double price;
     private int imageResId;
+    private String category; // MỚI
 
-    public FoodItem(String id, String name, double price, int imageResId) {
+    public FoodItem(String id, String name, double price, int imageResId, String category) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.imageResId = imageResId;
+        this.category = category;
     }
 
-    // --- Getters ---
+    // GETTERS
     public String getId() { return id; }
     public String getName() { return name; }
     public double getPrice() { return price; }
     public int getImageResId() { return imageResId; }
+    public String getCategory() { return category; } // MỚI
 
-    // --- Setters (nếu cần update) ---
-    public void setName(String name) { this.name = name; }
-    public void setPrice(double price) { this.price = price; }
-    public void setImageResId(int imageResId) { this.imageResId = imageResId; }
+    // SETTERS (nếu cần)
+    public void setCategory(String category) { this.category = category; }
 
     // === OVERRIDE equals() ===
     @Override

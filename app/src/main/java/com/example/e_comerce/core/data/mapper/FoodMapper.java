@@ -13,14 +13,16 @@ public class FoodMapper {
                 model.getId(),
                 model.getName(),
                 model.getPrice(),
-                model.getImageRes(),  // SỬA: getImageRes()
-                model.getCategory()
+                model.getImageResId(),
+                model.getCategory() // MỚI
         );
     }
 
     public static List<FoodEntity> toEntityList(List<FoodItem> models) {
         List<FoodEntity> list = new ArrayList<>();
-        for (FoodItem m : models) list.add(toEntity(m));
+        for (FoodItem m : models) {
+            list.add(toEntity(m));
+        }
         return list;
     }
 
@@ -29,14 +31,16 @@ public class FoodMapper {
                 entity.getId(),
                 entity.getName(),
                 entity.getPrice(),
-                entity.getImageRes(),  // SỬA: getImageRes()
-                entity.getCategory()
+                entity.getImageResId(),
+                entity.getCategory() // MỚI
         );
     }
 
     public static List<FoodItem> toModelList(List<FoodEntity> entities) {
         List<FoodItem> list = new ArrayList<>();
-        for (FoodEntity e : entities) list.add(toModel(e));
+        for (FoodEntity e : entities) {
+            list.add(toModel(e));
+        }
         return list;
     }
 }

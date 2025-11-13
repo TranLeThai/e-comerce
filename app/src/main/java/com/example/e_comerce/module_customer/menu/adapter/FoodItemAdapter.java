@@ -36,7 +36,7 @@ public class FoodItemAdapter extends ArrayAdapter<FoodItem> {
         TextView tvPrice = convertView.findViewById(R.id.tvFoodPrice);
 
         if (item != null) {
-            imgFood.setImageResource(item.getImageRes());
+            imgFood.setImageResource(item.getImageResId());
             tvName.setText(item.getName());
 
             // Định dạng tiền Việt Nam

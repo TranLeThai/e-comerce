@@ -43,10 +43,11 @@ public class AdminFoodViewModel extends ViewModel {
     }
 
     private void loadFoods() {
-
         List<FoodItem> dummy = new ArrayList<>();
-        dummy.add(new FoodItem("1", "Phở bò", 55000, R.drawable.burger));
-        dummy.add(new FoodItem("2", "Bún chả", 45000, R.drawable.com_ga));
+        // Add the missing 5th argument (a String for description/category)
+        dummy.add(new FoodItem("1", "Phở bò", 55000, R.drawable.burger, "Món ăn sáng phổ biến"));
+        dummy.add(new FoodItem("2", "Bún chả", 45000, R.drawable.com_ga, "Đặc sản Hà Nội"));
         foodList.setValue(dummy);
     }
+
 }

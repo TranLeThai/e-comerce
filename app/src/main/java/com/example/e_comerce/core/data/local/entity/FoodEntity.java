@@ -12,20 +12,21 @@ public class FoodEntity {
     private String id;
     private String name;
     private double price;
-    private int imageRes;  // DÙNG int, KHÔNG PHẢI String
+    private int imageResId;  // DÙNG int, KHÔNG PHẢI String
     private String category;
 
-    public FoodEntity(String id, String name, double price, int imageRes, String category) {
+    // The constructor parameter 'imageResId' now matches the field name.
+    public FoodEntity(String id, String name, double price, int imageResId, String category) {
         this.id = id;
         this.name = name;
         this.price = price;
-        this.imageRes = imageRes;
+        this.imageResId = imageResId; // Corrected the assignment here as well.
         this.category = category;
     }
 
     public String getId() { return id; }
     public String getName() { return name; }
     public double getPrice() { return price; }
-    public int getImageRes() { return imageRes; }
+    public int getImageResId() { return imageResId; }
     public String getCategory() { return category; }
 }

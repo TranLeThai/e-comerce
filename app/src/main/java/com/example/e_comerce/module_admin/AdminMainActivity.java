@@ -27,7 +27,7 @@ public class AdminMainActivity extends AppCompatActivity {
     }
 
     private void setupBottomNavigation() {
-        binding.bottomNav.setOnNavigationItemSelectedListener(item -> {
+        binding.bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_manage_food) {
                 replaceFragment(new ManageFoodFragment());
