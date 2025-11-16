@@ -1,11 +1,11 @@
-// module_customer/cart/CartActivity.java
+// module_customer/cart/CartActivity.java (SIMPLE VERSION)
 package com.example.e_comerce.module_customer.cart;
 
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.e_comerce.R;
@@ -27,41 +27,36 @@ public class CartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
 
-        initViews();
-        setupDatabase();
-        setupRecyclerView();
-        observeCart();
-    }
-
-    private void initViews() {
+        // Khởi tạo views
         recyclerView = findViewById(R.id.recyclerViewCart);
         textTotalPrice = findViewById(R.id.textTotalPrice);
         btnCheckout = findViewById(R.id.btnCheckout);
-    }
 
-    private void setupDatabase() {
+        // Setup database
         db = AppDatabase.getInstance(this);
-    }
 
-    private void setupRecyclerView() {
+        // Setup RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-    }
 
-    private void observeCart() {
-        LiveData<List<CartItem>> liveData = db.cartDao().getAllCartItems();
-        liveData.observe(this, cartItems -> {
-            if (adapter == null) {
-                adapter = new CartAdapter(cartItems, this::removeItem);
-                recyclerView.setAdapter(adapter);
-            } else {
-                adapter.notifyDataSetChanged();
-            }
+        // Observe cart data
+        db.cartDao().getAllCartItems().observe(this, cartItems -> {
+            // ✅ SỬA: Tạo lại adapter mỗi lần data thay đổi
+            adapter = new CartAdapter(cartItems, this::removeItem);
+            recyclerView.setAdapter(adapter);
+
+            // Update tổng tiền
             updateTotalPrice(cartItems);
+        });
+
+        // Nút thanh toán
+        btnCheckout.setOnClickListener(v -> {
+            Toast.makeText(this, "Chức năng thanh toán - Đang phát triển", Toast.LENGTH_SHORT).show();
         });
     }
 
     private void removeItem(CartItem item) {
         new Thread(() -> db.cartDao().removeFromCart(item)).start();
+        Toast.makeText(this, "Đã xóa khỏi giỏ hàng", Toast.LENGTH_SHORT).show();
     }
 
     private void updateTotalPrice(List<CartItem> cartItems) {

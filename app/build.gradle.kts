@@ -57,4 +57,6 @@ dependencies {
     // OkHttp (để log request/response)
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
+
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }

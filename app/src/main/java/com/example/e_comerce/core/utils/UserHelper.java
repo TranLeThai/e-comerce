@@ -54,4 +54,21 @@ public class UserHelper {
             return false;
         }
     }
+
+    public static boolean verifyUser(Context context, String username, String password) {
+        JSONArray users = getUsers(context);
+        for (int i = 0; i < users.length(); i++) {
+            try {
+                JSONObject user = users.getJSONObject(i);
+                String savedUser = user.getString("username");
+                String savedPass = user.getString("password");
+                if (savedUser.equals(username) && savedPass.equals(password)) {
+                    return true;
+                }
+            } catch (JSONException ignored) {
+                // bỏ qua phần tử lỗi
+            }
+        }
+        return false;
+    }
 }
