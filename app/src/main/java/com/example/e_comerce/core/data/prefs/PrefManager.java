@@ -39,6 +39,9 @@ public class PrefManager {
         return "admin".equals(getRole());
     }
 
+    public boolean isLoggedIn() {
+        return getToken() != null && !getToken().isEmpty();
+    }
     public void clear() {
         editor.clear();
         editor.apply();

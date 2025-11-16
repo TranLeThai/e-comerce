@@ -1,4 +1,4 @@
-// File: core/remote/RetrofitClient.java
+// core/data/remote/RetrofitClient.java
 package com.example.e_comerce.core.remote;
 
 import com.example.e_comerce.core.remote.api.FoodApiService;

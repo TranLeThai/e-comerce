@@ -28,5 +28,5 @@ public class FoodEntity {
     public String getName() { return name; }
     public double getPrice() { return price; }
     public int getImageResId() { return imageResId; }
-    public String getCategory() { return category; }
+    public String getCategory() { return category != null ? category : "Other"; }
 }

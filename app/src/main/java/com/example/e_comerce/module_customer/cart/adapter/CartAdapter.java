@@ -1,3 +1,5 @@
+// module_customer/cart/adapter/CartAdapter.java
+
 package com.example.e_comerce.module_customer.cart.adapter;
 
 import android.view.LayoutInflater;

@@ -1,3 +1,5 @@
+// module_customer/auth/RegisterActivity.java
+
 package com.example.e_comerce.module_customer.auth;
 
 import androidx.appcompat.app.AppCompatActivity;

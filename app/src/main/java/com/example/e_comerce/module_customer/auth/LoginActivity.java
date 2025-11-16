@@ -1,3 +1,4 @@
+// module_customer/auth/LoginActivity.java (SIMPLE - FOR MID-TERM PROJECT)
 package com.example.e_comerce.module_customer.auth;
 
 import android.content.Intent;
@@ -7,36 +8,26 @@ import android.widget.Button;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.e_comerce.R;
-import com.example.e_comerce.core.data.prefs.PrefManager;
 import com.example.e_comerce.module_admin.AdminMainActivity;
-import com.example.e_comerce.module_customer.cart.CartActivity;
 import com.example.e_comerce.module_customer.main.MainActivity;
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class LoginActivity extends AppCompatActivity {
 
     private TextInputEditText editEmail, editPassword;
     private Button btnLogin;
-    private PrefManager prefManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.customer_activity_login);
 
-        initViews();
-        prefManager = new PrefManager(this);
-        setupClickListeners();
-    }
-
-    private void initViews() {
+        // Khởi tạo views
         editEmail = findViewById(R.id.editEmail);
         editPassword = findViewById(R.id.editPassword);
         btnLogin = findViewById(R.id.btnLogin);
-    }
 
-    private void setupClickListeners() {
+        // Click login
         btnLogin.setOnClickListener(v -> performLogin());
     }
 
@@ -44,37 +35,34 @@ public class LoginActivity extends AppCompatActivity {
         String username = editEmail.getText().toString().trim();
         String password = editPassword.getText().toString().trim();
 
+        // Kiểm tra rỗng
         if (username.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
             return;
         }
 
 
-        SharedPreferences pref =  getSharedPreferences("UserData", MODE_PRIVATE);
-        String savedUsername = pref.getString("username", "");
-        String savedPassword = pref.getString("password", "");
-
-        if (username.equals("amdin") && password.equals("123456")) {
-            getSharedPreferences("LOGIN_PREF", MODE_PRIVATE)
-                    .edit()
-//                    .isBoolean("isLOGGIN", true)
-                    .apply();
+        // Check admin
+        if (username.equals("admin") && password.equals("123456")) {
+            saveLoginState(true);
             startActivity(new Intent(this, AdminMainActivity.class));
             finish();
-        }
-        if (username.equals(savedUsername) && password.equals(savedPassword)) {
-            Toast.makeText(this,"Đăng nhập thành công: ", Toast.LENGTH_SHORT).show();
-
-            getSharedPreferences("LOGIN_PREF", MODE_PRIVATE)
-                    .edit()
-//                    .isBoolean("isLOGGIN", true)
-                    .apply();
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
+            return; // ← QUAN TRỌNG! Thoát khỏi method
         }
 
-        else {
-            Toast.makeText(this, "Sai tài khoản hoặc mật khẩu", Toast.LENGTH_SHORT).show();
-        }
+        // Check customer
+        if (UserHelper.verifyUser(this, username, password)) {
+            // customer login
+            return;
+
+        // Nếu không match → sai mật khẩu
+        Toast.makeText(this, "Sai tài khoản hoặc mật khẩu", Toast.LENGTH_SHORT).show();
+    }
+
+    private void saveLoginState(boolean isLoggedIn) {
+        getSharedPreferences("LOGIN_PREF", MODE_PRIVATE)
+                .edit()
+                .putBoolean("isLoggedIn", isLoggedIn) // ← SỬA: putBoolean thay vì isBoolean
+                .apply();
     }
 }

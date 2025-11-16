@@ -1,4 +1,4 @@
-// FoodItem.java
+// core/data/model/FoodItem.java
 package com.example.e_comerce.core.data.model;
 
 import java.util.Objects;

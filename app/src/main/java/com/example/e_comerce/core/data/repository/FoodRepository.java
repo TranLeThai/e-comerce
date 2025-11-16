@@ -1,13 +1,14 @@
+// core/data/repository/FoodRepository.java
 package com.example.e_comerce.core.data.repository;
 
 import android.content.Context;
+import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.example.e_comerce.core.data.local.database.AppDatabase;
 import com.example.e_comerce.core.data.local.entity.FoodEntity;
 import com.example.e_comerce.core.data.mapper.FoodMapper;
 import com.example.e_comerce.core.data.model.FoodItem;
-import com.example.e_comerce.core.remote.api.FoodApiService;
 import com.example.e_comerce.core.remote.RetrofitClient;
 import java.util.List;
 import retrofit2.Call;
@@ -15,15 +16,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class FoodRepository {
-
+    private static final String TAG = "FoodRepository";
     private static FoodRepository instance;
-    private final FoodApiService apiService;
     private final AppDatabase db;
-    private final MutableLiveData<List<FoodItem>> foodListLiveData = new MutableLiveData<>();
 
     private FoodRepository(Context context) {
         db = AppDatabase.getInstance(context.getApplicationContext());
-        apiService = RetrofitClient.getApiService();
     }
 
     public static synchronized FoodRepository getInstance(Context context) {
@@ -33,35 +31,95 @@ public class FoodRepository {
         return instance;
     }
 
-    public LiveData<List<FoodItem>> getFoods() {
-        // 1. Lấy cache từ Room
-        db.foodDao().getAllFoods().observeForever(entities -> {
-            if (entities != null && !entities.isEmpty()) {
-                List<FoodItem> cached = FoodMapper.toModelList(entities);
-                foodListLiveData.postValue(cached);
-            }
-        });
+    // === GET FROM LOCAL DB ===
+    public LiveData<List<FoodEntity>> getLocalFoods() {
+        return db.foodDao().getAllFoods();
+    }
 
-        // 2. Gọi API + lưu cache
-        apiService.getFoods().enqueue(new Callback<List<FoodItem>>() {
+    public FoodEntity getFoodById(String id) {
+        return db.foodDao().getFoodById(id);
+    }
+
+    public LiveData<List<FoodEntity>> getFoodsByCategory(String category) {
+        return db.foodDao().getFoodsByCategory(category);
+    }
+
+    public LiveData<List<String>> getAllCategories() {
+        return db.foodDao().getAllCategories();
+    }
+
+    public LiveData<List<FoodEntity>> searchFoods(String query) {
+        return db.foodDao().searchFoods(query);
+    }
+
+    // === ADMIN OPERATIONS ===
+    public void insertFood(FoodEntity food) {
+        db.foodDao().insertFood(food);
+    }
+
+    public void updateFood(FoodEntity food) {
+        db.foodDao().insertFood(food); // REPLACE strategy tự động update
+    }
+
+    public void deleteFood(String id) {
+        new Thread(() -> {
+            FoodEntity food = db.foodDao().getFoodById(id);
+            if (food != null) {
+                db.foodDao().deleteFood(food);
+            }
+        }).start();
+    }
+
+    // === FETCH FROM API & CACHE TO DB ===
+    public LiveData<Boolean> fetchAndCacheFoods() {
+        MutableLiveData<Boolean> result = new MutableLiveData<>();
+
+        RetrofitClient.getApiService().getAllFoods().enqueue(new Callback<List<FoodItem>>() {
             @Override
             public void onResponse(Call<List<FoodItem>> call, Response<List<FoodItem>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<FoodItem> foods = response.body();
-                    foodListLiveData.postValue(foods);
-
-                    // Lưu vào Room
-                    List<FoodEntity> entities = FoodMapper.toEntityList(foods);
-                    new Thread(() -> db.foodDao().insertAll(entities)).start();
+                    // Lưu vào DB
+                    new Thread(() -> {
+                        List<FoodEntity> entities = FoodMapper.toEntityList(foods);
+                        db.foodDao().deleteAllFoods(); // Xóa data cũ
+                        db.foodDao().insertFoods(entities);
+                        result.postValue(true);
+                    }).start();
+                } else {
+                    Log.e(TAG, "API error: " + response.code());
+                    result.setValue(false);
                 }
             }
 
             @Override
             public void onFailure(Call<List<FoodItem>> call, Throwable t) {
-                // Dùng cache nếu API lỗi
+                Log.e(TAG, "Network error: " + t.getMessage());
+                result.setValue(false);
             }
         });
 
-        return foodListLiveData;
+        return result;
+    }
+
+    // === SEARCH FOODS ===
+    public LiveData<List<FoodItem>> searchFoods(String query) {
+        MutableLiveData<List<FoodItem>> result = new MutableLiveData<>();
+
+        RetrofitClient.getApiService().searchFoods(query).enqueue(new Callback<List<FoodItem>>() {
+            @Override
+            public void onResponse(Call<List<FoodItem>> call, Response<List<FoodItem>> response) {
+                if (response.isSuccessful()) {
+                    result.setValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<FoodItem>> call, Throwable t) {
+                Log.e(TAG, "Search failed: " + t.getMessage());
+            }
+        });
+
+        return result;
     }
 }

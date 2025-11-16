@@ -1,3 +1,4 @@
+//module_customer/main/MainActivity.java
 package com.example.e_comerce.module_customer.main;
 
 import com.example.e_comerce.core.data.model.FoodItem;
