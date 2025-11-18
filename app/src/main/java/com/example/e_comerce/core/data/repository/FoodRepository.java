@@ -10,6 +10,7 @@ import com.example.e_comerce.core.data.local.entity.FoodEntity;
 import com.example.e_comerce.core.data.mapper.FoodMapper;
 import com.example.e_comerce.core.data.model.FoodItem;
 import com.example.e_comerce.core.remote.RetrofitClient;
+import com.example.e_comerce.core.remote.ApiService;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -102,24 +103,25 @@ public class FoodRepository {
         return result;
     }
 
-    // === SEARCH FOODS ===
     public LiveData<List<FoodItem>> searchFoods(String query) {
         MutableLiveData<List<FoodItem>> result = new MutableLiveData<>();
 
         RetrofitClient.getApiService().searchFoods(query).enqueue(new Callback<List<FoodItem>>() {
             @Override
             public void onResponse(Call<List<FoodItem>> call, Response<List<FoodItem>> response) {
-                if (response.isSuccessful()) {
+                if (response.isSuccessful() && response.body() != null) {
                     result.setValue(response.body());
+                } else {
+                    result.setValue(null); // hoặc List rỗng
                 }
             }
 
             @Override
             public void onFailure(Call<List<FoodItem>> call, Throwable t) {
                 Log.e(TAG, "Search failed: " + t.getMessage());
+                result.setValue(null);
             }
         });
-
         return result;
     }
 }

@@ -1,7 +1,6 @@
 // core/data/remote/RetrofitClient.java
 package com.example.e_comerce.core.remote;
 
-import com.example.e_comerce.core.remote.api.FoodApiService;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -16,7 +15,7 @@ public class RetrofitClient {
 
     private static Retrofit retrofit = null;
 
-    public static FoodApiService getApiService() {
+    public static ApiService getApiService() {
         if (retrofit == null) {
             // Tạo logging để xem request/response
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
@@ -32,6 +31,6 @@ public class RetrofitClient {
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
-        return retrofit.create(FoodApiService.class);
+        return retrofit.create(ApiService.class);
     }
 }

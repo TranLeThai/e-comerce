@@ -1,4 +1,4 @@
-// module_admin/fragment/RevenueFragment.java (FULL IMPLEMENTATION)
+// module_admin/fragment/RevenueFragment.java
 package com.example.e_comerce.module_admin.fragment;
 
 import android.graphics.Color;
@@ -109,7 +109,7 @@ public class RevenueFragment extends Fragment {
         binding.pieChart.setData(data);
         binding.pieChart.getDescription().setEnabled(false);
         binding.pieChart.setEntryLabelTextSize(12f);
-        binding.pieChart.invalidate(); // refresh
+        binding.pieChart.invalidate();
     }
 
     private String formatCurrency(double amount) {

@@ -20,6 +20,23 @@ public class AdminFoodViewModel extends ViewModel {
         return foodList;
     }
 
+    // === THÊM METHOD NÀY ===
+    public LiveData<FoodItem> getFoodById(String id) {
+        MutableLiveData<FoodItem> result = new MutableLiveData<>();
+        List<FoodItem> currentList = foodList.getValue();
+        if (currentList != null) {
+            for (FoodItem food : currentList) {
+                if (food.getId().equals(id)) {
+                    result.setValue(food);
+                    return result;
+                }
+            }
+        }
+        result.setValue(null); // Không tìm thấy
+        return result;
+    }
+    // === KẾT THÚC THÊM ===
+
     public void addFood(FoodItem food) {
         List<FoodItem> curr = new ArrayList<>(foodList.getValue());
         curr.add(food);
@@ -31,8 +48,8 @@ public class AdminFoodViewModel extends ViewModel {
         for (int i = 0; i < curr.size(); i++) {
             if (curr.get(i).getId().equals(updatedFood.getId())) {
                 curr.set(i, updatedFood);
+                break; // <-- BỎ break ở đây là SAI! (đã sửa)
             }
-            break;
         }
         foodList.setValue(curr);
     }
@@ -45,10 +62,11 @@ public class AdminFoodViewModel extends ViewModel {
 
     private void loadFoods() {
         List<FoodItem> dummy = new ArrayList<>();
-        // Add the missing 5th argument (a String for description/category)
-        dummy.add(new FoodItem("1", "Phở bò", 55000, R.drawable.burger, "Món ăn sáng phổ biến"));
-        dummy.add(new FoodItem("2", "Bún chả", 45000, R.drawable.com_ga, "Đặc sản Hà Nội"));
+        dummy.add(new FoodItem("1", "Phở bò", 55000, R.drawable.burger, "Món Việt"));
+        dummy.add(new FoodItem("2", "Bún chả", 45000, R.drawable.com_ga, "Món Việt"));
+        dummy.add(new FoodItem("3", "Pizza Margherita", 120000, R.drawable.burger, "Pizza"));
+        dummy.add(new FoodItem("4", "Burger Bò", 85000, R.drawable.burger, "Burger"));
+        dummy.add(new FoodItem("5", "Trà sữa", 35000, R.drawable.burger, "Đồ uống"));
         foodList.setValue(dummy);
     }
-
 }

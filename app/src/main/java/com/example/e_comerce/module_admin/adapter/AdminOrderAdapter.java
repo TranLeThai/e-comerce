@@ -35,7 +35,7 @@ public class AdminOrderAdapter extends ListAdapter<Order, AdminOrderAdapter.View
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_admin_order, parent, false);
+                .inflate(R.layout.admin_item_order, parent, false);
         return new ViewHolder(view);
     }
 
