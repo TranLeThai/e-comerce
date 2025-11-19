@@ -1,25 +1,32 @@
-// core/data/repository/FoodRepository.java
 package com.example.e_comerce.core.data.repository;
 
 import android.content.Context;
 import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+
 import com.example.e_comerce.core.data.local.database.AppDatabase;
 import com.example.e_comerce.core.data.local.entity.FoodEntity;
 import com.example.e_comerce.core.data.mapper.FoodMapper;
 import com.example.e_comerce.core.data.model.FoodItem;
 import com.example.e_comerce.core.remote.RetrofitClient;
-import com.example.e_comerce.core.remote.ApiService;
+
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class FoodRepository {
+
     private static final String TAG = "FoodRepository";
     private static FoodRepository instance;
+
     private final AppDatabase db;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private FoodRepository(Context context) {
         db = AppDatabase.getInstance(context.getApplicationContext());
@@ -32,7 +39,7 @@ public class FoodRepository {
         return instance;
     }
 
-    // === GET FROM LOCAL DB ===
+    // === LOCAL DB ===
     public LiveData<List<FoodEntity>> getLocalFoods() {
         return db.foodDao().getAllFoods();
     }
@@ -49,29 +56,25 @@ public class FoodRepository {
         return db.foodDao().getAllCategories();
     }
 
-//    public LiveData<List<FoodEntity>> searchFoods(String query) {
-//        return db.foodDao().searchFoods(query);
-//    }
-
-    // === ADMIN OPERATIONS ===
+    // === ADMIN ===
     public void insertFood(FoodEntity food) {
-        db.foodDao().insertFood(food);
+        executor.execute(() -> db.foodDao().insertFood(food));
     }
 
     public void updateFood(FoodEntity food) {
-        db.foodDao().insertFood(food); // REPLACE strategy tự động update
+        executor.execute(() -> db.foodDao().insertFood(food)); // REPLACE = update
     }
 
     public void deleteFood(String id) {
-        new Thread(() -> {
+        executor.execute(() -> {
             FoodEntity food = db.foodDao().getFoodById(id);
             if (food != null) {
                 db.foodDao().deleteFood(food);
             }
-        }).start();
+        });
     }
 
-    // === FETCH FROM API & CACHE TO DB ===
+    // === FETCH API & CACHE LOCAL ===
     public LiveData<Boolean> fetchAndCacheFoods() {
         MutableLiveData<Boolean> result = new MutableLiveData<>();
 
@@ -79,53 +82,34 @@ public class FoodRepository {
             @Override
             public void onResponse(Call<List<FoodItem>> call, Response<List<FoodItem>> response) {
                 if (response.isSuccessful() && response.body() != null) {
+
                     List<FoodItem> foods = response.body();
-                    // Lưu vào DB
-                    new Thread(() -> {
+
+                    executor.execute(() -> {
                         List<FoodEntity> entities = FoodMapper.toEntityList(foods);
-                        db.foodDao().deleteAllFoods(); // Xóa data cũ
+                        db.foodDao().deleteAllFoods();
                         db.foodDao().insertFoods(entities);
                         result.postValue(true);
-                    }).start();
+                    });
+
                 } else {
                     Log.e(TAG, "API error: " + response.code());
-                    result.setValue(false);
+                    result.postValue(false);
                 }
             }
 
             @Override
             public void onFailure(Call<List<FoodItem>> call, Throwable t) {
                 Log.e(TAG, "Network error: " + t.getMessage());
-                result.setValue(false);
+                result.postValue(false);
             }
         });
 
         return result;
     }
 
+    // === SEARCH FOODS ONLINE ===
     public LiveData<List<FoodItem>> searchFoods(String query) {
-        MutableLiveData<List<FoodItem>> result = new MutableLiveData<>();
-
-        RetrofitClient.getApiService().searchFoods(query).enqueue(new Callback<List<FoodItem>>() {
-            @Override
-            public void onResponse(Call<List<FoodItem>> call, Response<List<FoodItem>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    result.setValue(response.body());
-                } else {
-                    result.setValue(null); // hoặc List rỗng
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<FoodItem>> call, Throwable t) {
-                Log.e(TAG, "Search failed: " + t.getMessage());
-                result.setValue(null);
-            }
-        });
-        return result;
-    }
-    // =======================================
-    public LiveData<List<FoodItem>> searchFoodsOnline(String query) {
         MutableLiveData<List<FoodItem>> result = new MutableLiveData<>();
 
         RetrofitClient.getApiService().searchFoods(query).enqueue(new Callback<List<FoodItem>>() {
@@ -134,15 +118,13 @@ public class FoodRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     result.postValue(response.body());
                 } else {
-                    Log.e(TAG, "Search API error: " + response.code() + " - " + response.message());
-                    result.postValue(null); // hoặc Collections.emptyList()
+                    result.postValue(null);
                 }
             }
 
             @Override
             public void onFailure(Call<List<FoodItem>> call, Throwable t) {
                 Log.e(TAG, "Search failed: " + t.getMessage());
-                t.printStackTrace();
                 result.postValue(null);
             }
         });

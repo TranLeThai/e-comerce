@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.e_comerce.R;
@@ -15,8 +16,8 @@ import com.google.android.material.textfield.TextInputEditText;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private TextInputEditText edtUsername, editPassword;
-    private Button btnLogin;
+    private EditText edtUsername, editPassword;
+    private Button btnLogin, btnRegister;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,16 +28,21 @@ public class LoginActivity extends AppCompatActivity {
         edtUsername = findViewById(R.id.username);
         editPassword = findViewById(R.id.password);
         btnLogin = findViewById(R.id.loginBtn);
+        btnRegister = findViewById(R.id.registerBtn);
 
         // Click login
         btnLogin.setOnClickListener(v -> performLogin());
+        btnRegister.setOnClickListener(v -> {
+
+            startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+        });
     }
     private void saveLoginState(boolean isLoggedIn, String username, boolean isAdmin) {
         SharedPreferences prefs = getSharedPreferences("LOGIN_PREF", MODE_PRIVATE);
         prefs.edit()
                 .putBoolean("isLoggedIn", isLoggedIn)
-                .putString("username", username)      // <-- lưu tên người dùng
-                .putBoolean("isAdmin", isAdmin)       // <-- phân biệt admin / customer
+                .putString("username", username)
+                .putBoolean("isAdmin", isAdmin)
                 .apply();
     }
 
