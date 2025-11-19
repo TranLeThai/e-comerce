@@ -49,9 +49,9 @@ public class FoodRepository {
         return db.foodDao().getAllCategories();
     }
 
-    public LiveData<List<FoodEntity>> searchFoods(String query) {
-        return db.foodDao().searchFoods(query);
-    }
+//    public LiveData<List<FoodEntity>> searchFoods(String query) {
+//        return db.foodDao().searchFoods(query);
+//    }
 
     // === ADMIN OPERATIONS ===
     public void insertFood(FoodEntity food) {
