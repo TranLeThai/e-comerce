@@ -52,7 +52,7 @@ public class FoodViewModel extends AndroidViewModel {
         }).start();
     }
 
-    public LiveData<List<FoodEntity>> searchFoods(String query) {
+    public LiveData<List<FoodItem>> searchFoodsFromApi(String query) {
         return repository.searchFoods(query);
     }
 }

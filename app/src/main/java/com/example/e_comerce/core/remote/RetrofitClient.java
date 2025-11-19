@@ -8,18 +8,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
 
-    // THAY ĐỔI BASE URL THEO SERVER CỦA BẠN
-    private static final String BASE_URL = "http://10.0.2.2:3000/"; // Dùng cho Android Emulator
-    // Nếu dùng thiết bị thật: http://192.168.x.x:3000/
-    // Nếu dùng server thật: https://your-api.com/
+    private static final String BASE_URL = "https://your-api.com/"; // ← thay bằng URL thật của bạn
 
-    private static Retrofit retrofit = null;
+    private static Retrofit retrofit;
 
     public static ApiService getApiService() {
         if (retrofit == null) {
-            // Tạo logging để xem request/response
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY); // để thấy log request/response
 
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(logging)

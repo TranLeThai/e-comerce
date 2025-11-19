@@ -124,4 +124,29 @@ public class FoodRepository {
         });
         return result;
     }
+    // =======================================
+    public LiveData<List<FoodItem>> searchFoodsOnline(String query) {
+        MutableLiveData<List<FoodItem>> result = new MutableLiveData<>();
+
+        RetrofitClient.getApiService().searchFoods(query).enqueue(new Callback<List<FoodItem>>() {
+            @Override
+            public void onResponse(Call<List<FoodItem>> call, Response<List<FoodItem>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    result.postValue(response.body());
+                } else {
+                    Log.e(TAG, "Search API error: " + response.code() + " - " + response.message());
+                    result.postValue(null); // hoặc Collections.emptyList()
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<FoodItem>> call, Throwable t) {
+                Log.e(TAG, "Search failed: " + t.getMessage());
+                t.printStackTrace();
+                result.postValue(null);
+            }
+        });
+
+        return result;
+    }
 }
