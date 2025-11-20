@@ -50,6 +50,26 @@
             android:name=".module_admin.AdminMainActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".module_customer.auth.ResetPasswordActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".module_admin.activity.AddEditFoodActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".module_admin.activity.AddEditFoodActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".module_admin.activity.OrderDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".module_admin.activity.OrderFoodActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

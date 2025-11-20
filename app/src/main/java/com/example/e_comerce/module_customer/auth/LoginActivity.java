@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.e_comerce.R;
@@ -17,6 +18,7 @@ import com.google.android.material.textfield.TextInputEditText;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText edtUsername, editPassword;
+    private TextView tvForgotPassword;
     private Button btnLogin, btnRegister;
 
     @Override
@@ -29,12 +31,20 @@ public class LoginActivity extends AppCompatActivity {
         editPassword = findViewById(R.id.password);
         btnLogin = findViewById(R.id.loginBtn);
         btnRegister = findViewById(R.id.registerBtn);
+        tvForgotPassword = findViewById(R.id.tvForgotPassword);
+
+        tvForgotPassword.setPaintFlags(tvForgotPassword.getPaintFlags() | android.graphics.Paint.UNDERLINE_TEXT_FLAG);
 
         // Click login
         btnLogin.setOnClickListener(v -> performLogin());
         btnRegister.setOnClickListener(v -> {
 
             startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+        });
+
+        tvForgotPassword.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, ResetPasswordActivity.class);
+            startActivity(intent);
         });
     }
     private void saveLoginState(boolean isLoggedIn, String username, boolean isAdmin) {
