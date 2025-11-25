@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="24dp"
+    android:orientation="vertical"
+    android:background="@drawable/ic_spinner_background"
+    android:gravity="center_horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <!-- Ảnh minh họa khuyến mãi -->
+    <ImageView
+        android:id="@+id/imgPromo"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/ic_food"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Tiêu đề nổi bật -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Khuyến Mãi Đặc Biệt!"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#E53935"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Nội dung khuyến mãi -->
+    <TextView
+        android:id="@+id/tvMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Giảm ngay 25% cho tất cả món ăn hôm nay!\nNhanh tay đặt món nhé 🍔🍟"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:layout_marginBottom="20dp"/>
+
+    <!-- Nút đóng -->
+    <Button
+        android:id="@+id/btnClose"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Đóng"
+        android:backgroundTint="#E53935"
+        android:textColor="#FFFFFF"/>
+
+</LinearLayout>
