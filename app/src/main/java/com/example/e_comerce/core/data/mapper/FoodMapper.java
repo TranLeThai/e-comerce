@@ -8,7 +8,7 @@ import java.util.List;
 
 public class FoodMapper {
 
-    // Chuyển từ Model (App hiển thị) -> Entity (Database lưu trữ)
+
     public static FoodEntity toEntity(FoodItem model) {
         if (model == null) return null;
         return new FoodEntity(
@@ -20,7 +20,6 @@ public class FoodMapper {
         );
     }
 
-    // Chuyển danh sách Model -> Danh sách Entity
     public static List<FoodEntity> toEntityList(List<FoodItem> models) {
         List<FoodEntity> list = new ArrayList<>();
         if (models != null) {
@@ -31,7 +30,6 @@ public class FoodMapper {
         return list;
     }
 
-    // Chuyển từ Entity (Database) -> Model (App)
     public static FoodItem toModel(FoodEntity entity) {
         if (entity == null) return null;
         return new FoodItem(

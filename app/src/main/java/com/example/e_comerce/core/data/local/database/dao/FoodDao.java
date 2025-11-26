@@ -12,7 +12,7 @@ import java.util.List;
 @Dao
 public interface FoodDao {
 
-    // --- CÁC HÀM ĐÃ ĐÚNG ---
+
     @Query("DELETE FROM foods")
     void deleteAllFoods();
 
@@ -31,26 +31,25 @@ public interface FoodDao {
     @Delete
     void deleteFood(FoodEntity food);
 
-    // --- CÁC HÀM CẦN SỬA (THÊM ANNOTATION) ---
 
-    // 1. Thêm danh sách món ăn (Cần @Insert)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertFoods(List<FoodEntity> foods);
 
-    // 2. Lấy theo danh mục (Cần @Query)
+    // 2. Lấy theo danh mục
     @Query("SELECT * FROM foods WHERE category = :category")
     LiveData<List<FoodEntity>> getFoodsByCategory(String category);
 
-    // 3. Lấy tất cả danh mục (Cần @Query)
+    // 3. Lấy tất cả danh mục
     @Query("SELECT DISTINCT category FROM foods")
     LiveData<List<String>> getAllCategories();
 
-    // 4. Tìm kiếm món ăn (Cần @Query)
-    // Dùng dấu % để tìm gần đúng (chứa từ khóa)
+    // 4. Tìm kiếm món ăn
+
     @Query("SELECT * FROM foods WHERE name LIKE '%' || :query || '%'")
     LiveData<List<FoodEntity>> searchFoods(String query);
 
-    // 5. Đếm số lượng (Cần @Query)
+    // 5. Đếm số lượng
     @Query("SELECT COUNT(*) FROM foods")
     int getFoodCount();
 }

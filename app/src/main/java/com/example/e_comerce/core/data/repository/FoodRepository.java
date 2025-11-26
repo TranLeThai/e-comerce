@@ -39,7 +39,7 @@ public class FoodRepository {
         return instance;
     }
 
-    // === LOCAL DB (Đã sửa trả về LiveData) ===
+    // === LOCAL DB ===
     public LiveData<List<FoodEntity>> getLocalFoods() {
         return db.foodDao().getAllFoods();
     }
@@ -67,12 +67,11 @@ public class FoodRepository {
 
     public void deleteFood(String id) {
         executor.execute(() -> {
-            // LƯU Ý: Phải đảm bảo bạn đã thêm deleteFoodById vào FoodDao
             db.foodDao().deleteFoodById(id);
         });
     }
 
-    // === FETCH API & CACHE LOCAL (PHẦN BẠN ĐANG THIẾU) ===
+    // === FETCH API & CACHE LOCAL ===
     public LiveData<Boolean> fetchAndCacheFoods() {
         MutableLiveData<Boolean> result = new MutableLiveData<>();
 

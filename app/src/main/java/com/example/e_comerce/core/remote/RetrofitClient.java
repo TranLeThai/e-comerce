@@ -1,4 +1,4 @@
-// core/data/remote/RetrofitClient.java
+
 package com.example.e_comerce.core.remote;
 
 import okhttp3.OkHttpClient;
@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
 
-    private static final String BASE_URL = "https://your-api.com/"; // ← thay bằng URL thật của bạn
+    private static final String BASE_URL = "https://console.firebase.google.com/project/food-c2f87/settings/general/android:com.example.foodorderapp"; //
 
     private static Retrofit retrofit;
 

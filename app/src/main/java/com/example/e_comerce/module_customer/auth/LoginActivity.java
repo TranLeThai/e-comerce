@@ -1,4 +1,3 @@
-// module_customer/auth/LoginActivity.java (SIMPLE - FOR MID-TERM PROJECT)
 package com.example.e_comerce.module_customer.auth;
 
 import android.content.Intent;
@@ -26,7 +25,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.customer_activity_login);
 
-        // Khởi tạo views
         edtUsername = findViewById(R.id.username);
         editPassword = findViewById(R.id.password);
         btnLogin = findViewById(R.id.loginBtn);
@@ -35,7 +33,6 @@ public class LoginActivity extends AppCompatActivity {
 
         tvForgotPassword.setPaintFlags(tvForgotPassword.getPaintFlags() | android.graphics.Paint.UNDERLINE_TEXT_FLAG);
 
-        // Click login
         btnLogin.setOnClickListener(v -> performLogin());
         btnRegister.setOnClickListener(v -> {
 
@@ -60,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
         String username = edtUsername.getText().toString().trim();
         String password = editPassword.getText().toString().trim();
 
-        // Kiểm tra rỗng
+
         if (username.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
             return;

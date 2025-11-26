@@ -12,7 +12,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-public interface ApiService { // ĐỔI TÊN TỪ FoodApiService → ApiService
+public interface ApiService {
 
     @GET("api/foods")
     Call<List<FoodItem>> getAllFoods();
