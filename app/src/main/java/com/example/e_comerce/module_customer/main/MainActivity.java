@@ -1,10 +1,12 @@
-//module_customer/main/MainActivity.java
 package com.example.e_comerce.module_customer.main;
 
 import com.example.e_comerce.core.data.local.database.CartViewModelFactory;
 import com.example.e_comerce.core.data.local.entity.CartItem;
+import com.example.e_comerce.core.data.local.entity.FoodEntity; // Import mới
+import com.example.e_comerce.core.data.mapper.FoodMapper; // Import mới
 import com.example.e_comerce.core.data.model.FoodItem;
 import com.example.e_comerce.core.viewmodel.CartViewModel;
+import com.example.e_comerce.core.viewmodel.CustomerFoodViewModel; // Import mới
 import com.example.e_comerce.module_customer.cart.CartActivity;
 import com.example.e_comerce.module_customer.menu.adapter.FoodItemAdapter;
 
@@ -30,20 +32,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    // ... Khai báo biến giữ nguyên
     private Button buttonHome, buttonCart, buttonFavorite, buttonProfile;
     private EditText edtSearch;
     private ListView listView;
     private List<FoodItem> dsMonAn;
     private FoodItemAdapter adapter;
 
+    // Thêm ViewModel lấy danh sách món ăn
+    private CustomerFoodViewModel foodViewModel;
+
     private void showThongBao() {
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_khuyenmai);
-        dialog.setCancelable(false); // Không cho tắt khi nhấn ngoài
-
+        dialog.setCancelable(false);
         Button btnClose = dialog.findViewById(R.id.btnClose);
         btnClose.setOnClickListener(v -> dialog.dismiss());
-
         dialog.show();
     }
 
@@ -54,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
         showThongBao();
 
-        // Ánh xạ view
+        // Ánh xạ view (Giữ nguyên)
         edtSearch = findViewById(R.id.edtSearch);
         listView = findViewById(R.id.listMonAn);
         buttonHome = findViewById(R.id.btnHome);
@@ -62,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         buttonFavorite = findViewById(R.id.btnFav);
         buttonProfile = findViewById(R.id.btnProfile);
 
-        // Xử lý padding cho tai thỏ
+        // Xử lý padding (Giữ nguyên)
         View mainLayout = findViewById(R.id.main);
         if (mainLayout != null) {
             ViewCompat.setOnApplyWindowInsetsListener(mainLayout, (v, insets) -> {
@@ -72,24 +76,38 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        CartViewModel viewModel = new ViewModelProvider(
+        // 1. ViewModel Giỏ hàng (Giữ nguyên)
+        CartViewModel cartViewModel = new ViewModelProvider(
                 this,
                 new CartViewModelFactory(getApplication())
         ).get(CartViewModel.class);
 
+        // 2. ViewModel Món ăn (THÊM MỚI)
+        foodViewModel = new ViewModelProvider(this).get(CustomerFoodViewModel.class);
 
-        // TẠO DỮ LIỆU MẪU – ĐÚNG 100% VỚI FoodItem
+        // 3. Khởi tạo Adapter với danh sách rỗng trước
         dsMonAn = new ArrayList<>();
-        dsMonAn.add(new FoodItem("1", "Pizza Hải Sản", 120000, R.drawable.pizza, "Pizza"));
-        dsMonAn.add(new FoodItem("2", "Burger Bò Phô Mai", 85000, R.drawable.burger, "Burger"));
-        dsMonAn.add(new FoodItem("3", "Cơm Gà Xối Mỡ", 70000, R.drawable.com_ga, "Cơm"));
-        dsMonAn.add(new FoodItem("4", "Trà Sữa Trân Châu", 45000, R.drawable.tra_sua, "Đồ uống"));
-
-        // GÁN ADAPTER – KHÔNG CẦN LISTENER
         adapter = new FoodItemAdapter(this, dsMonAn);
         listView.setAdapter(adapter);
 
-        // CLICK ITEM → HIỂN THỊ TÊN
+        // 4. QUAN SÁT DỮ LIỆU TỪ DATABASE (THAY CHO DỮ LIỆU GIẢ)
+        foodViewModel.getAllFoods().observe(this, foodEntities -> {
+            if (foodEntities != null) {
+                dsMonAn.clear(); // Xóa dữ liệu cũ
+
+                // Chuyển đổi từ Entity (Database) sang Model (Hiển thị)
+                for (FoodEntity entity : foodEntities) {
+                    // Dùng Mapper cho gọn (nếu bạn đã có Mapper.toModel)
+                    // Hoặc viết tay như sau:
+                    dsMonAn.add(FoodMapper.toModel(entity));
+                }
+
+                // Cập nhật giao diện
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        // 5. Xử lý Click Item (Giữ nguyên logic)
         listView.setOnItemClickListener((parent, view, position, id) -> {
             FoodItem mon = dsMonAn.get(position);
 
@@ -101,13 +119,11 @@ public class MainActivity extends AppCompatActivity {
                     String.valueOf(mon.getImageResId())
             );
 
-            viewModel.addToCart(item);   // ⬅ THÊM VÀO CART
-
+            cartViewModel.addToCart(item);
             Toast.makeText(this, "Đã thêm " + mon.getName() + " vào giỏ hàng", Toast.LENGTH_SHORT).show();
         });
 
-
-        // CLICK ẢNH NHÀ HÀNG
+        // ... Các sự kiện Click khác giữ nguyên
         ImageView restaurantImage = findViewById(R.id.ivRestaurantImage);
         if (restaurantImage != null) {
             restaurantImage.setOnClickListener(v ->

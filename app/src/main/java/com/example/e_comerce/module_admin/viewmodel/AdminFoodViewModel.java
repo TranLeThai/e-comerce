@@ -1,72 +1,92 @@
-// module_admin/viewmodel/AdminFoodViewModel.java
 package com.example.e_comerce.module_admin.viewmodel;
 
+import android.app.Application;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.Transformations;
+
+import com.example.e_comerce.core.data.local.database.AppDatabase;
+import com.example.e_comerce.core.data.local.database.dao.FoodDao;
+import com.example.e_comerce.core.data.local.entity.FoodEntity;
 import com.example.e_comerce.core.data.model.FoodItem;
-import java.util.ArrayList;
-import com.example.e_comerce.R;
+
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class AdminFoodViewModel extends ViewModel {
-    private final MutableLiveData<List<FoodItem>> foodList = new MutableLiveData<>();
+public class AdminFoodViewModel extends AndroidViewModel {
 
-    public AdminFoodViewModel() {
-        loadFoods();
+    private final FoodDao foodDao;
+    private final ExecutorService executorService;
+    private final LiveData<List<FoodItem>> allFoods;
+
+    public AdminFoodViewModel(@NonNull Application application) {
+        super(application);
+        AppDatabase db = AppDatabase.getInstance(application);
+        foodDao = db.foodDao();
+        executorService = Executors.newSingleThreadExecutor();
+
+        // Chuyển đổi danh sách Entity -> Model cho RecyclerView
+        allFoods = Transformations.map(foodDao.getAllFoods(), entities -> {
+            // (Bạn có thể thêm code convert list ở đây nếu cần)
+            // Để đơn giản, giả sử Adapter của bạn xử lý list này hoặc convert tương tự bên dưới
+            java.util.List<FoodItem> models = new java.util.ArrayList<>();
+            for (FoodEntity entity : entities) {
+                models.add(new FoodItem(
+                        entity.getId(), entity.getName(), (long) entity.getPrice(),
+                        entity.getImageResId(), entity.getCategory()
+                ));
+            }
+            return models;
+        });
     }
 
     public LiveData<List<FoodItem>> getAllFoods() {
-        return foodList;
+        return allFoods;
     }
 
-    // === THÊM METHOD NÀY ===
+    // === HÀM QUAN TRỌNG ĐỂ LẤY CHI TIẾT MÓN ĂN ===
     public LiveData<FoodItem> getFoodById(String id) {
-        MutableLiveData<FoodItem> result = new MutableLiveData<>();
-        List<FoodItem> currentList = foodList.getValue();
-        if (currentList != null) {
-            for (FoodItem food : currentList) {
-                if (food.getId().equals(id)) {
-                    result.setValue(food);
-                    return result;
-                }
-            }
-        }
-        result.setValue(null); // Không tìm thấy
-        return result;
+        return Transformations.map(foodDao.getFoodById(id), entity -> {
+            if (entity == null) return null;
+            return new FoodItem(
+                    entity.getId(),
+                    entity.getName(),
+                    (long) entity.getPrice(),
+                    entity.getImageResId(),
+                    entity.getCategory()
+            );
+        });
     }
-    // === KẾT THÚC THÊM ===
 
     public void addFood(FoodItem food) {
-        List<FoodItem> curr = new ArrayList<>(foodList.getValue());
-        curr.add(food);
-        foodList.setValue(curr);
+        executorService.execute(() -> {
+            FoodEntity entity = new FoodEntity(
+                    food.getId(), food.getName(), food.getPrice(),
+                    food.getImageResId(), food.getCategory()
+            );
+            foodDao.insertFood(entity);
+        });
     }
 
-    public void updateFood(FoodItem updatedFood) {
-        List<FoodItem> curr = new ArrayList<>(foodList.getValue());
-        for (int i = 0; i < curr.size(); i++) {
-            if (curr.get(i).getId().equals(updatedFood.getId())) {
-                curr.set(i, updatedFood);
-                break; // <-- BỎ break ở đây là SAI! (đã sửa)
-            }
-        }
-        foodList.setValue(curr);
+    public void updateFood(FoodItem food) {
+        executorService.execute(() -> {
+            FoodEntity entity = new FoodEntity(
+                    food.getId(), food.getName(), food.getPrice(),
+                    food.getImageResId(), food.getCategory()
+            );
+            foodDao.insertFood(entity);
+        });
     }
 
-    public void deleteFood(String foodId) {
-        List<FoodItem> current = new ArrayList<>(foodList.getValue());
-        current.removeIf(food -> food.getId().equals(foodId));
-        foodList.setValue(current);
+    public void deleteFood(FoodEntity food) { // Cần nhận FoodEntity hoặc ID để xóa
+        executorService.execute(() -> foodDao.deleteFood(food));
     }
-
-    private void loadFoods() {
-        List<FoodItem> dummy = new ArrayList<>();
-        dummy.add(new FoodItem("1", "Phở bò", 55000, R.drawable.burger, "Món Việt"));
-        dummy.add(new FoodItem("2", "Bún chả", 45000, R.drawable.com_ga, "Món Việt"));
-        dummy.add(new FoodItem("3", "Pizza Margherita", 120000, R.drawable.burger, "Pizza"));
-        dummy.add(new FoodItem("4", "Burger Bò", 85000, R.drawable.burger, "Burger"));
-        dummy.add(new FoodItem("5", "Trà sữa", 35000, R.drawable.burger, "Đồ uống"));
-        foodList.setValue(dummy);
+    public void deleteFood(String id) {
+        executorService.execute(() -> {
+            // Gọi hàm xóa theo ID vừa thêm ở Bước 1
+            foodDao.deleteFoodById(id);
+        });
     }
 }
