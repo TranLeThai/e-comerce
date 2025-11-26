@@ -113,17 +113,20 @@ public class AdminFoodAdapter extends ListAdapter<FoodItem, AdminFoodAdapter.Vie
     private static final DiffUtil.ItemCallback<FoodItem> DIFF_CALLBACK = new DiffUtil.ItemCallback<FoodItem>() {
         @Override
         public boolean areItemsTheSame(@NonNull FoodItem oldItem, @NonNull FoodItem newItem) {
+            // Kiểm tra null cho ID (phòng trường hợp ID chưa có)
+            if (oldItem.getId() == null || newItem.getId() == null) return false;
             return oldItem.getId().equals(newItem.getId());
         }
 
         @Override
         public boolean areContentsTheSame(@NonNull FoodItem oldItem, @NonNull FoodItem newItem) {
-            // So sánh nội dung để cập nhật giao diện nếu có thay đổi
-            return oldItem.getName().equals(newItem.getName()) &&
+            // Sử dụng Objects.equals để so sánh an toàn (tránh NullPointerException)
+            // Thay vì old.getName().equals(new.getName())
+
+            return java.util.Objects.equals(oldItem.getName(), newItem.getName()) &&
                     oldItem.getPrice() == newItem.getPrice() &&
-                    // So sánh chuỗi ảnh thay vì ID cũ
-                    oldItem.getImage().equals(newItem.getImage()) &&
-                    oldItem.getCategory().equals(newItem.getCategory());
+                    java.util.Objects.equals(oldItem.getImage(), newItem.getImage()) &&
+                    java.util.Objects.equals(oldItem.getCategory(), newItem.getCategory());
         }
     };
 }

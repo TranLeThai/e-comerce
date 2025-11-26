@@ -1,4 +1,4 @@
-package com.example.e_comerce.module_customer.cart;
+package com.example.e_comerce.module_customer.fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

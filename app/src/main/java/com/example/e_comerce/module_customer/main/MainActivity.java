@@ -4,11 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import com.example.e_comerce.module_customer.main.ProfileFragment;
+import com.example.e_comerce.module_customer.fragment.ProfileFragment;
 import com.example.e_comerce.R;
 import com.example.e_comerce.module_customer.cart.CartActivity;
 import com.example.e_comerce.module_admin.fragment.RevenueFragment; // Ví dụ Favorite
-import com.example.e_comerce.module_customer.cart.CartFragment;
+import com.example.e_comerce.module_customer.fragment.CartFragment;
 import com.example.e_comerce.module_customer.fragment.HomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 

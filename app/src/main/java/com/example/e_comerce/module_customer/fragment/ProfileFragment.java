@@ -1,4 +1,4 @@
-package com.example.e_comerce.module_customer.main;
+package com.example.e_comerce.module_customer.fragment;
 
 import android.app.AlertDialog;
 import android.content.Intent;
