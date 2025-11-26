@@ -1,32 +1,42 @@
-// core/data/local/entity/FoodEntity.java
 package com.example.e_comerce.core.data.local.entity;
 
-import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "foods")
 public class FoodEntity {
-    @PrimaryKey
-    @NonNull
-    private String id;
+    @PrimaryKey(autoGenerate = true)
+    private int id;
     private String name;
     private double price;
-    private int imageResId;  // DÙNG int, KHÔNG PHẢI String
+    private String image; // <--- QUAN TRỌNG: Đổi thành String (lưu URI hoặc URL)
     private String category;
 
-    // The constructor parameter 'imageResId' now matches the field name.
-    public FoodEntity(String id, String name, double price, int imageResId, String category) {
-        this.id = id;
+    // Constructor rỗng (Bắt buộc cho Room)
+    public FoodEntity() { }
+
+    // Constructor đầy đủ
+    public FoodEntity(String name, double price, String image, String category) {
         this.name = name;
         this.price = price;
-        this.imageResId = imageResId; // Corrected the assignment here as well.
+        this.image = image;
         this.category = category;
     }
 
-    public String getId() { return id; }
+    // Getters và Setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
     public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
     public double getPrice() { return price; }
-    public int getImageResId() { return imageResId; }
-    public String getCategory() { return category != null ? category : "Other"; }
+    public void setPrice(double price) { this.price = price; }
+
+    // Hàm này sẽ sửa lỗi đỏ "Cannot resolve method getImage"
+    public String getImage() { return image; }
+    public void setImage(String image) { this.image = image; }
+
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 }

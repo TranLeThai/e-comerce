@@ -9,8 +9,10 @@ import androidx.lifecycle.Transformations;
 import com.example.e_comerce.core.data.local.database.AppDatabase;
 import com.example.e_comerce.core.data.local.database.dao.FoodDao;
 import com.example.e_comerce.core.data.local.entity.FoodEntity;
+import com.example.e_comerce.core.data.mapper.FoodMapper; // Import Mapper
 import com.example.e_comerce.core.data.model.FoodItem;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,16 +29,14 @@ public class AdminFoodViewModel extends AndroidViewModel {
         foodDao = db.foodDao();
         executorService = Executors.newSingleThreadExecutor();
 
-        // Chuyển đổi danh sách Entity -> Model cho RecyclerView
+        // SỬA: Dùng FoodMapper để chuyển đổi Entity -> Model
+        // Không còn lỗi getImageResId hay ép kiểu sai nữa
         allFoods = Transformations.map(foodDao.getAllFoods(), entities -> {
-            // (Bạn có thể thêm code convert list ở đây nếu cần)
-            // Để đơn giản, giả sử Adapter của bạn xử lý list này hoặc convert tương tự bên dưới
-            java.util.List<FoodItem> models = new java.util.ArrayList<>();
-            for (FoodEntity entity : entities) {
-                models.add(new FoodItem(
-                        entity.getId(), entity.getName(), (long) entity.getPrice(),
-                        entity.getImageResId(), entity.getCategory()
-                ));
+            List<FoodItem> models = new ArrayList<>();
+            if (entities != null) {
+                for (FoodEntity entity : entities) {
+                    models.add(FoodMapper.toModel(entity));
+                }
             }
             return models;
         });
@@ -46,46 +46,49 @@ public class AdminFoodViewModel extends AndroidViewModel {
         return allFoods;
     }
 
-    // === HÀM QUAN TRỌNG ĐỂ LẤY CHI TIẾT MÓN ĂN ===
+    // SỬA: Dùng Mapper cho hàm lấy chi tiết
     public LiveData<FoodItem> getFoodById(String id) {
         return Transformations.map(foodDao.getFoodById(id), entity -> {
             if (entity == null) return null;
-            return new FoodItem(
-                    entity.getId(),
-                    entity.getName(),
-                    (long) entity.getPrice(),
-                    entity.getImageResId(),
-                    entity.getCategory()
-            );
+            return FoodMapper.toModel(entity);
         });
     }
 
+    // SỬA: Hàm thêm món (Dùng Mapper)
+    public void insertFood(FoodEntity food) { // Giữ nguyên nhận FoodEntity từ Activity
+        executorService.execute(() -> {
+            foodDao.insertFood(food);
+        });
+    }
+
+    // Nếu bạn muốn truyền FoodItem vào thì dùng hàm này:
     public void addFood(FoodItem food) {
         executorService.execute(() -> {
-            FoodEntity entity = new FoodEntity(
-                    food.getId(), food.getName(), food.getPrice(),
-                    food.getImageResId(), food.getCategory()
-            );
+            FoodEntity entity = FoodMapper.toEntity(food);
             foodDao.insertFood(entity);
         });
     }
 
+    // SỬA: Hàm cập nhật
     public void updateFood(FoodItem food) {
         executorService.execute(() -> {
-            FoodEntity entity = new FoodEntity(
-                    food.getId(), food.getName(), food.getPrice(),
-                    food.getImageResId(), food.getCategory()
-            );
-            foodDao.insertFood(entity);
+            FoodEntity entity = FoodMapper.toEntity(food);
+            // QUAN TRỌNG: Mapper toEntity thường tạo object mới không có ID.
+            // Khi update phải set lại ID cũ để Room biết đường ghi đè.
+            try {
+                if (food.getId() != null) {
+                    entity.setId(Integer.parseInt(food.getId()));
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+            foodDao.insertFood(entity); // Insert với ID cũ = Update
         });
     }
 
-    public void deleteFood(FoodEntity food) { // Cần nhận FoodEntity hoặc ID để xóa
-        executorService.execute(() -> foodDao.deleteFood(food));
-    }
+    // Hàm xóa theo ID (Khuyên dùng)
     public void deleteFood(String id) {
         executorService.execute(() -> {
-            // Gọi hàm xóa theo ID vừa thêm ở Bước 1
             foodDao.deleteFoodById(id);
         });
     }

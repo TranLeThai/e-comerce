@@ -1,130 +1,117 @@
 package com.example.e_comerce.module_admin.activity;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.e_comerce.R;
-import com.example.e_comerce.core.data.model.FoodItem;
-import com.example.e_comerce.databinding.ActivityAddEditFoodBinding;
+import com.example.e_comerce.core.data.local.entity.FoodEntity;
 import com.example.e_comerce.module_admin.viewmodel.AdminFoodViewModel;
-
-import java.util.UUID;
+import com.google.android.material.textfield.TextInputEditText;
 
 public class AddEditFoodActivity extends AppCompatActivity {
 
-    private ActivityAddEditFoodBinding binding;
+    // Khai báo View theo ID mới
+    private TextInputEditText etName, etPrice;
+    private Spinner spinnerCategory;
+    private ImageView imgFood;
+    private Button btnSave;
+
     private AdminFoodViewModel viewModel;
-    private boolean isEditMode = false;
-    private String foodId;
+    private String selectedImageStr = ""; // Lưu đường dẫn ảnh
+
+    // Bộ chọn ảnh
+    private final ActivityResultLauncher<String> pickImageLauncher = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            uri -> {
+                if (uri != null) {
+                    selectedImageStr = uri.toString();
+                    imgFood.setImageURI(uri);
+                    imgFood.setPadding(0,0,0,0); // Xóa padding để ảnh full đẹp hơn
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityAddEditFoodBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        setContentView(R.layout.activity_add_edit_food);
+
+        // 1. Ánh xạ View (ID khớp với XML mới)
+        etName = findViewById(R.id.etName);
+        etPrice = findViewById(R.id.etPrice);
+        spinnerCategory = findViewById(R.id.spinnerCategory);
+        imgFood = findViewById(R.id.imgFood);
+        btnSave = findViewById(R.id.btnSave);
+
+        // Setup Toolbar (Nút back)
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            toolbar.setNavigationOnClickListener(v -> finish());
+        }
 
         viewModel = new ViewModelProvider(this).get(AdminFoodViewModel.class);
 
-        // Kiểm tra xem đang Thêm mới hay Sửa
-        foodId = getIntent().getStringExtra("food_id");
-        isEditMode = (foodId != null);
-
-        setupToolbar();
+        // 2. Setup Spinner Danh mục
         setupCategorySpinner();
 
-        // Load dữ liệu cũ nếu là chế độ Sửa
-        if (isEditMode) {
-            loadFoodData();
-        }
+        // 3. Sự kiện chọn ảnh
+        imgFood.setOnClickListener(v -> pickImageLauncher.launch("image/*"));
 
-        binding.btnSave.setOnClickListener(v -> saveFood());
-    }
-
-    private void setupToolbar() {
-        setSupportActionBar(binding.toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(isEditMode ? "Chỉnh sửa món ăn" : "Thêm món mới");
-        }
-        binding.toolbar.setNavigationOnClickListener(v -> finish());
+        // 4. Sự kiện Lưu
+        btnSave.setOnClickListener(v -> saveFood());
     }
 
     private void setupCategorySpinner() {
-        String[] categories = {"Pizza", "Burger", "Món Việt", "Dessert", "Đồ uống"};
+        // Danh sách danh mục mẫu
+        String[] categories = {"Pizza", "Burger", "Chicken", "Noodles", "Drinks", "Snacks"};
+
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_item, categories
+                this,
+                android.R.layout.simple_spinner_item,
+                categories
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.spinnerCategory.setAdapter(adapter);
-    }
-
-    private void loadFoodData() {
-        // Quan sát dữ liệu từ Database
-        viewModel.getFoodById(foodId).observe(this, food -> {
-            if (food != null) {
-                binding.etName.setText(food.getName());
-                binding.etPrice.setText(String.valueOf(food.getPrice()));
-
-                // Set ảnh (Tạm thời dùng ảnh resource)
-                binding.imgFood.setImageResource(food.getImageResId());
-
-                // Set danh mục cho Spinner
-                String category = food.getCategory();
-                ArrayAdapter adapter = (ArrayAdapter) binding.spinnerCategory.getAdapter();
-                if (adapter != null) {
-                    int position = adapter.getPosition(category);
-                    if (position >= 0) {
-                        binding.spinnerCategory.setSelection(position);
-                    }
-                }
-            }
-        });
+        spinnerCategory.setAdapter(adapter);
     }
 
     private void saveFood() {
-        String name = binding.etName.getText().toString().trim();
-        String priceStr = binding.etPrice.getText().toString().trim();
-        String category = "";
-        if (binding.spinnerCategory.getSelectedItem() != null) {
-            category = binding.spinnerCategory.getSelectedItem().toString();
-        }
+        String name = etName.getText().toString().trim();
+        String priceStr = etPrice.getText().toString().trim();
 
-        if (name.isEmpty()) {
-            binding.etName.setError("Vui lòng nhập tên món");
-            return;
-        }
-        if (priceStr.isEmpty()) {
-            binding.etPrice.setError("Vui lòng nhập giá");
+        // Lấy giá trị từ Spinner
+        String category = spinnerCategory.getSelectedItem().toString();
+
+        if (name.isEmpty() || priceStr.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập tên và giá tiền", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        double price;
-        try {
-            price = Double.parseDouble(priceStr);
-        } catch (NumberFormatException e) {
-            binding.etPrice.setError("Giá không hợp lệ");
-            return;
+        // Nếu chưa chọn ảnh thì lấy ảnh mặc định
+        if (selectedImageStr.isEmpty()) {
+            selectedImageStr = String.valueOf(R.drawable.ic_menu_camera);
+            // Hoặc R.drawable.ic_pizza tùy bạn
         }
 
-        // Ảnh mặc định (vì chưa có chức năng upload ảnh thật)
-        int defaultImage = R.drawable.pizza;
+        double price = Double.parseDouble(priceStr);
 
-        if (isEditMode) {
-            // Cập nhật món cũ (giữ nguyên ID cũ)
-            FoodItem updatedFood = new FoodItem(foodId, name, price, defaultImage, category);
-            viewModel.updateFood(updatedFood);
-            Toast.makeText(this, "Đã cập nhật", Toast.LENGTH_SHORT).show();
-        } else {
-            // Tạo món mới (Sinh ID ngẫu nhiên bằng UUID)
-            String newId = UUID.randomUUID().toString();
-            FoodItem newFood = new FoodItem(newId, name, price, defaultImage, category);
-            viewModel.addFood(newFood);
-            Toast.makeText(this, "Đã thêm mới", Toast.LENGTH_SHORT).show();
-        }
+        // Tạo Entity và Lưu
+        FoodEntity newFood = new FoodEntity(name, price, selectedImageStr, category);
+        viewModel.insertFood(newFood);
 
+        Toast.makeText(this, "Đã thêm món: " + name, Toast.LENGTH_SHORT).show();
         finish();
     }
 }

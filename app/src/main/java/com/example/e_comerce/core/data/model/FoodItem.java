@@ -1,31 +1,26 @@
 package com.example.e_comerce.core.data.model;
 
-import com.example.e_comerce.core.data.local.entity.FoodEntity;
+import java.io.Serializable;
 
-public class FoodItem {
+public class FoodItem implements Serializable {
     private String id;
     private String name;
     private double price;
-    private int imageResId;
+    private String image;
     private String category;
 
-    public FoodItem(String id, String name, double price, int imageResId, String category) {
+    public FoodItem(String id, String name, double price, String image) { // Sửa constructor
         this.id = id;
         this.name = name;
         this.price = price;
-        this.imageResId = imageResId;
-        this.category = category;
+        this.image = image;
     }
 
-    // --- SỬA ĐÚNG: Trả về String ---
-    public String getId() { return id; }
+    // Sửa Getter
+    public String getImage() { return image; }
 
+    public String getCategory() { return category; }
+    public String getId() { return id; }
     public String getName() { return name; }
     public double getPrice() { return price; }
-    public int getImageResId() { return imageResId; }
-    public String getCategory() { return category; }
-
-    public void setCategory(String category) { this.category = category; }
-
-    // (Giữ nguyên equals và hashCode...)
 }

@@ -1,4 +1,4 @@
-package com.example.e_comerce.module_admin.adapter;
+package com.example.e_comerce.module_customer.menu.adapter;
 
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -11,18 +11,9 @@ import com.example.e_comerce.R;
 import com.example.e_comerce.core.data.local.entity.OrderEntity;
 import java.util.List;
 
-public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.OrderViewHolder> {
+public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdapter.OrderViewHolder> {
 
-    public interface OnOrderClickListener {
-        void onOrderClick(OrderEntity order);
-    }
     private List<OrderEntity> orderList;
-    private final OnOrderClickListener listener; // Biến listener
-
-    // 2. Sửa Constructor để nhận Listener
-    public AdminOrderAdapter(OnOrderClickListener listener) {
-        this.listener = listener;
-    }
 
     public void setOrderList(List<OrderEntity> list) {
         this.orderList = list;
@@ -32,6 +23,7 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Or
     @NonNull
     @Override
     public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // Tái sử dụng layout của Admin cho tiết kiệm công sức
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_admin_order, parent, false);
         return new OrderViewHolder(view);
     }
@@ -40,23 +32,24 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Or
     public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
         OrderEntity order = orderList.get(position);
 
-        holder.tvOrderId.setText("Đơn hàng #" + order.id);
+        holder.tvOrderId.setText("Đơn #" + order.id);
         holder.tvOrderDate.setText(order.orderDate);
         holder.tvOrderSummary.setText(order.itemsSummary);
         holder.tvOrderTotal.setText(String.format("%,.0f ₫", order.totalAmount));
 
-        // Xử lý màu sắc trạng thái
+        // Màu sắc trạng thái
         holder.tvStatus.setText(order.status);
         if (order.status.equals("Đang chờ")) {
-            holder.tvStatus.setTextColor(Color.parseColor("#FFA000")); // Màu cam
+            holder.tvStatus.setTextColor(Color.parseColor("#FFA000")); // Cam
+        } else if (order.status.equals("Đang giao")) {
+            holder.tvStatus.setTextColor(Color.BLUE);
         } else if (order.status.equals("Hoàn thành")) {
-            holder.tvStatus.setTextColor(Color.parseColor("#4CAF50")); // Màu xanh
+            holder.tvStatus.setTextColor(Color.parseColor("#4CAF50")); // Xanh
         } else {
             holder.tvStatus.setTextColor(Color.BLACK);
         }
-        holder.itemView.setOnClickListener(v -> {
-            listener.onOrderClick(order);
-        });
+
+        // Lưu ý: Không có sự kiện setOnClickListener ở đây vì Khách không được sửa
     }
 
     @Override

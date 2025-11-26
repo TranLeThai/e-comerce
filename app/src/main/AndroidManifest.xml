@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- Quyền cần thiết -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!-- Nếu cần lưu ảnh, giữ lại (Android 13+ cần thêm quyền khác) -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- Nếu cần lưu ảnh, giữ lại (Android 13+ cần thêm quyền khác) -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
 
     <application
@@ -19,57 +18,49 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Ecomerce"
         tools:targetApi="31">
-
+        <activity
+            android:name=".module_customer.main.ProfileActivity"
+            android:exported="false" />
         <!-- 1. LOGIN - MÀN HÌNH ĐẦU TIÊN -->
         <activity
             android:name=".module_customer.auth.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!-- 2. ĐĂNG KÝ -->
+        <activity
+            android:name=".module_customer.history.OrderHistoryActivity"
+            android:exported="false" /> <!-- 2. ĐĂNG KÝ -->
         <activity
             android:name=".module_customer.auth.RegisterActivity"
-            android:exported="false" />
-
-        <!-- 3. TRANG CHỦ CUSTOMER -->
+            android:exported="false" /> <!-- 3. TRANG CHỦ CUSTOMER -->
         <activity
             android:name=".module_customer.main.MainActivity"
-            android:exported="false" />
-
-        <!-- 4. GIỎ HÀNG -->
+            android:exported="false" /> <!-- 4. GIỎ HÀNG -->
         <activity
             android:name=".module_customer.cart.CartActivity"
-            android:exported="false" />
-
-        <!-- 5. ADMIN PANEL (sau này) -->
+            android:exported="false" /> <!-- 5. ADMIN PANEL (sau này) -->
         <activity
             android:name=".module_admin.AdminMainActivity"
             android:exported="false" />
-
         <activity
             android:name=".module_customer.auth.ResetPasswordActivity"
             android:exported="false" />
-
         <activity
             android:name=".module_admin.activity.AddEditFoodActivity"
             android:exported="false" />
-
         <activity
             android:name=".module_admin.activity.AddEditFoodActivity"
             android:exported="false" />
-
         <activity
             android:name=".module_admin.activity.OrderDetailActivity"
             android:exported="false" />
-
         <activity
             android:name=".module_admin.activity.OrderFoodActivity"
             android:exported="false" />
-
     </application>
 
 </manifest>

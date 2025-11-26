@@ -3,26 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/img">
+    android:background="@drawable/img"> <com.google.android.material.appbar.AppBarLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-    <!-- Toolbar -->
-    <com.google.android.material.appbar.AppBarLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:title="Quản lý đơn hàng"
+        app:titleTextColor="@android:color/white"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:title="Quản lý đơn hàng"
-            app:titleTextColor="@android:color/white"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+</com.google.android.material.appbar.AppBarLayout>
 
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <!-- Main Content -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -30,25 +26,24 @@
         android:padding="16dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- Filter Spinner -->
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+            android:layout_marginBottom="16dp">
 
             <AutoCompleteTextView
                 android:id="@+id/spinner_filter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:hint="Lọc theo trạng thái"
                 android:inputType="none"
-                android:focusable="false"
-                android:focusableInTouchMode="false" />
+                android:text="Tất cả" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- ProgressBar (hiện khi đang load) -->
         <ProgressBar
             android:id="@+id/progress_bar"
             style="?android:attr/progressBarStyleLarge"
@@ -58,30 +53,28 @@
             android:layout_marginTop="32dp"
             android:visibility="gone" />
 
-        <!-- RecyclerView danh sách đơn hàng -->
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_orders"
+            android:id="@+id/rvOrderList"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:clipToPadding="false"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            android:visibility="visible" />
+            android:visibility="visible"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-        <!-- Empty state -->
         <TextView
             android:id="@+id/tv_empty"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginTop="64dp"
+            android:drawableTop="@android:drawable/ic_menu_info_details"
+            android:drawablePadding="12dp"
             android:gravity="center"
             android:text="Chưa có đơn hàng nào"
-            android:textSize="18sp"
             android:textColor="#888888"
-            android:layout_marginTop="64dp"
-            android:visibility="gone"
-            android:drawableTop="@android:drawable/ic_menu_info_details"
-            android:drawablePadding="12dp" />
+            android:textSize="18sp"
+            android:visibility="gone" />
 
     </LinearLayout>
 

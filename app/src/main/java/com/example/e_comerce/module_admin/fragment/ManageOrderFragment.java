@@ -1,109 +1,158 @@
-// module_admin/fragment/ManageOrderFragment.java (FULL IMPLEMENTATION)
 package com.example.e_comerce.module_admin.fragment;
 
-import android.content.Intent;
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import com.example.e_comerce.databinding.FragmentManageOrderBinding;
-import com.example.e_comerce.module_admin.activity.OrderDetailActivity;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.e_comerce.R;
+import com.example.e_comerce.core.data.local.database.AppDatabase;
+import com.example.e_comerce.core.data.local.entity.OrderEntity;
 import com.example.e_comerce.module_admin.adapter.AdminOrderAdapter;
 import com.example.e_comerce.module_admin.viewmodel.AdminOrderViewModel;
 
+import java.util.List;
+
 public class ManageOrderFragment extends Fragment {
 
-    private FragmentManageOrderBinding binding;
+    private RecyclerView rvOrders;
+    private TextView tvEmpty;
+    private AutoCompleteTextView spinnerFilter;
+
     private AdminOrderAdapter adapter;
     private AdminOrderViewModel viewModel;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        binding = FragmentManageOrderBinding.inflate(inflater, container, false);
-        return binding.getRoot();
-    }
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_manage_order, container, false);
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        // 1. Ánh xạ View
+        rvOrders = view.findViewById(R.id.rvOrderList);
+        tvEmpty = view.findViewById(R.id.tv_empty);
+        spinnerFilter = view.findViewById(R.id.spinner_filter);
 
+        // 2. Setup ViewModel
         viewModel = new ViewModelProvider(this).get(AdminOrderViewModel.class);
 
+        // 3. Setup RecyclerView
+        rvOrders.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new AdminOrderAdapter(order -> {
+            // Sự kiện khi click vào đơn hàng
+            showUpdateStatusDialog(order);
+        });
+        rvOrders.setAdapter(adapter);
+
+        // 4. Setup bộ lọc (Spinner)
         setupFilterSpinner();
-        setupRecyclerView();
-        observeOrders();
+
+        // 5. Load dữ liệu mặc định (Tất cả)
+        loadOrders("Tất cả");
+
+        return view;
     }
 
+    // --- HÀM CÀI ĐẶT SPINNER LỌC ---
     private void setupFilterSpinner() {
-        String[] statuses = {"Tất cả", "Chờ xác nhận", "Đang giao", "Hoàn thành", "Đã hủy"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+        // Danh sách trạng thái (Phải khớp với Database)
+        String[] filterOptions = {"Tất cả", "Đang chờ", "Đang giao", "Hoàn thành", "Đã hủy"};
+
+        ArrayAdapter<String> adapterSpinner = new ArrayAdapter<>(
                 requireContext(),
-                android.R.layout.simple_spinner_item,
-                statuses
+                android.R.layout.simple_dropdown_item_1line,
+                filterOptions
         );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.spinnerFilter.setAdapter(adapter);
 
-        binding.spinnerFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String status = statuses[position];
-                if (status.equals("Tất cả")) {
-                    viewModel.loadAllOrders();
-                } else {
-                    viewModel.filterOrdersByStatus(status);
-                }
+        spinnerFilter.setAdapter(adapterSpinner);
+
+        // Mặc định chọn "Tất cả" nhưng không kích hoạt lọc ngay lập tức để tránh load 2 lần
+        spinnerFilter.setText(filterOptions[0], false);
+
+        // Bắt sự kiện khi chọn item trong spinner
+        spinnerFilter.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedStatus = filterOptions[position];
+            loadOrders(selectedStatus);
+        });
+    }
+
+    // --- HÀM TẢI DỮ LIỆU ---
+    private void loadOrders(String status) {
+        // Xóa các observer cũ để tránh chồng chéo dữ liệu khi switch qua lại
+        viewModel.getAllOrders().removeObservers(getViewLifecycleOwner());
+        // Lưu ý: Với getOrdersByStatus trả về LiveData mới mỗi lần gọi,
+        // nên việc removeObservers triệt để ở đây chỉ mang tính tương đối trong scope cơ bản này.
+
+        if (status.equals("Tất cả")) {
+            viewModel.getAllOrders().observe(getViewLifecycleOwner(), this::updateList);
+        } else {
+            // Lọc theo trạng thái cụ thể
+            viewModel.getOrdersByStatus(status).observe(getViewLifecycleOwner(), this::updateList);
+        }
+    }
+
+    // --- HÀM CẬP NHẬT GIAO DIỆN LIST ---
+    private void updateList(List<OrderEntity> orders) {
+        if (orders != null && !orders.isEmpty()) {
+            rvOrders.setVisibility(View.VISIBLE);
+            tvEmpty.setVisibility(View.GONE);
+            adapter.setOrderList(orders);
+        } else {
+            rvOrders.setVisibility(View.GONE);
+            tvEmpty.setVisibility(View.VISIBLE);
+        }
+    }
+
+    // --- HIỆN DIALOG CẬP NHẬT TRẠNG THÁI ---
+    private void showUpdateStatusDialog(OrderEntity order) {
+        String[] statuses = {"Đang chờ", "Đang giao", "Hoàn thành", "Đã hủy"};
+
+        // Tìm vị trí của trạng thái hiện tại để check sẵn vào dialog
+        int checkedItem = -1;
+        for (int i = 0; i < statuses.length; i++) {
+            if (statuses[i].equals(order.status)) {
+                checkedItem = i;
+                break;
             }
+        }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
+        new AlertDialog.Builder(getContext())
+                .setTitle("Cập nhật trạng thái đơn #" + order.id)
+                .setSingleChoiceItems(statuses, checkedItem, (dialog, which) -> {
+                    String selectedStatus = statuses[which];
+
+                    // Thực hiện update vào Database
+                    updateOrderStatus(order.id, selectedStatus);
+
+                    dialog.dismiss(); // Đóng dialog
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 
-    private void setupRecyclerView() {
-        adapter = new AdminOrderAdapter();
-        binding.recyclerOrders.setLayoutManager(new LinearLayoutManager(requireContext()));
-        binding.recyclerOrders.setAdapter(adapter);
+    // --- GỌI DATABASE ĐỂ UPDATE ---
+    private void updateOrderStatus(int orderId, String newStatus) {
+        new Thread(() -> {
+            AppDatabase db = AppDatabase.getInstance(getContext());
+            db.orderDao().updateOrderStatus(orderId, newStatus);
 
-        adapter.setOnItemClickListener(order -> {
-            Intent intent = new Intent(requireContext(), OrderDetailActivity.class);
-            intent.putExtra("order_id", order.getId());
-            startActivity(intent);
-        });
-    }
-
-    private void observeOrders() {
-        viewModel.getOrders().observe(getViewLifecycleOwner(), orders -> {
-            adapter.submitList(orders);
-
-            // Show/hide empty view
-            if (orders.isEmpty()) {
-                binding.recyclerOrders.setVisibility(View.GONE);
-                binding.tvEmpty.setVisibility(View.VISIBLE);
-            } else {
-                binding.recyclerOrders.setVisibility(View.VISIBLE);
-                binding.tvEmpty.setVisibility(View.GONE);
+            // Thông báo lên Main Thread
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(() ->
+                        Toast.makeText(getContext(), "Đã cập nhật: " + newStatus, Toast.LENGTH_SHORT).show()
+                );
             }
-        });
-
-        // Observe loading state
-        viewModel.isLoading().observe(getViewLifecycleOwner(), isLoading -> {
-            binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-        });
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+        }).start();
     }
 }
