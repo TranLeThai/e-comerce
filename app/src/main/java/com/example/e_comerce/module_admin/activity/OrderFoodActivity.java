@@ -92,7 +92,7 @@ public class OrderFoodActivity extends AppCompatActivity {
             String orderId = "ORD_" + System.currentTimeMillis();
             String customerName = "Khách lẻ";
             String status = "Chờ xác nhận";
-            String date = "18/11/2025";   // hoặc dùng DateFormat để lấy ngày hiện tại
+            String date = "18/11/2025";
 
             Intent result = new Intent();
             result.putExtra("order_id", orderId);

@@ -21,23 +21,21 @@ import com.google.android.material.textfield.TextInputEditText;
 
 public class AddEditFoodActivity extends AppCompatActivity {
 
-    // Khai báo View theo ID mới
     private TextInputEditText etName, etPrice;
     private Spinner spinnerCategory;
     private ImageView imgFood;
     private Button btnSave;
 
     private AdminFoodViewModel viewModel;
-    private String selectedImageStr = ""; // Lưu đường dẫn ảnh
+    private String selectedImageStr = "";
 
-    // Bộ chọn ảnh
     private final ActivityResultLauncher<String> pickImageLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             uri -> {
                 if (uri != null) {
                     selectedImageStr = uri.toString();
                     imgFood.setImageURI(uri);
-                    imgFood.setPadding(0,0,0,0); // Xóa padding để ảnh full đẹp hơn
+                    imgFood.setPadding(0,0,0,0);
                 }
             }
     );
@@ -47,14 +45,12 @@ public class AddEditFoodActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_food);
 
-        // 1. Ánh xạ View (ID khớp với XML mới)
         etName = findViewById(R.id.etName);
         etPrice = findViewById(R.id.etPrice);
         spinnerCategory = findViewById(R.id.spinnerCategory);
         imgFood = findViewById(R.id.imgFood);
         btnSave = findViewById(R.id.btnSave);
 
-        // Setup Toolbar (Nút back)
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -64,18 +60,14 @@ public class AddEditFoodActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(AdminFoodViewModel.class);
 
-        // 2. Setup Spinner Danh mục
         setupCategorySpinner();
 
-        // 3. Sự kiện chọn ảnh
         imgFood.setOnClickListener(v -> pickImageLauncher.launch("image/*"));
 
-        // 4. Sự kiện Lưu
         btnSave.setOnClickListener(v -> saveFood());
     }
 
     private void setupCategorySpinner() {
-        // Danh sách danh mục mẫu
         String[] categories = {"Pizza", "Burger", "Chicken", "Noodles", "Drinks", "Snacks"};
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
@@ -91,7 +83,6 @@ public class AddEditFoodActivity extends AppCompatActivity {
         String name = etName.getText().toString().trim();
         String priceStr = etPrice.getText().toString().trim();
 
-        // Lấy giá trị từ Spinner
         String category = spinnerCategory.getSelectedItem().toString();
 
         if (name.isEmpty() || priceStr.isEmpty()) {
@@ -99,15 +90,12 @@ public class AddEditFoodActivity extends AppCompatActivity {
             return;
         }
 
-        // Nếu chưa chọn ảnh thì lấy ảnh mặc định
         if (selectedImageStr.isEmpty()) {
             selectedImageStr = String.valueOf(R.drawable.ic_menu_camera);
-            // Hoặc R.drawable.ic_pizza tùy bạn
         }
 
         double price = Double.parseDouble(priceStr);
 
-        // Tạo Entity và Lưu
         FoodEntity newFood = new FoodEntity(name, price, selectedImageStr, category);
         viewModel.insertFood(newFood);
 

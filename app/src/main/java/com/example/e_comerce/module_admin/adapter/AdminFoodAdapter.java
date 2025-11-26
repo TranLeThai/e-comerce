@@ -2,10 +2,12 @@ package com.example.e_comerce.module_admin.adapter;
 
 import android.net.Uri;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
@@ -33,9 +35,9 @@ public class AdminFoodAdapter extends ListAdapter<FoodItem, AdminFoodAdapter.Vie
         super(DIFF_CALLBACK);
     }
 
-    @NonNull @Override
+    @NonNull
+    @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Đảm bảo tên layout item_admin_food đúng với file xml của bạn
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_admin_food, parent, false);
         return new ViewHolder(view);
@@ -49,56 +51,59 @@ public class AdminFoodAdapter extends ListAdapter<FoodItem, AdminFoodAdapter.Vie
 
     class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imgFood;
-        TextView tvFoodName, tvCategory, tvPrice;
-        ImageButton btnEdit, btnDelete; // Thêm nút Delete
+        TextView tvFoodName, tvPrice, tvCategory;
+        ImageButton btnOptions; // Nút 3 chấm
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            // Ánh xạ View (Đảm bảo ID khớp với file XML)
             imgFood = itemView.findViewById(R.id.img_food);
             tvFoodName = itemView.findViewById(R.id.tv_food_name);
-            tvCategory = itemView.findViewById(R.id.tv_category);
             tvPrice = itemView.findViewById(R.id.tv_price);
-            btnEdit = itemView.findViewById(R.id.btn_edit);
-            btnDelete = itemView.findViewById(R.id.btn_delete); // Ánh xạ nút xóa
+            tvCategory = itemView.findViewById(R.id.tv_category);
+            btnOptions = itemView.findViewById(R.id.btn_edit);
 
-            // Sự kiện Edit
-            if (btnEdit != null) {
-                btnEdit.setOnClickListener(v -> {
-                    int pos = getAdapterPosition();
-                    if (pos != RecyclerView.NO_POSITION && listener != null) {
-                        listener.onEditClick(getItem(pos));
-                    }
-                });
-            }
+            btnOptions.setOnClickListener(v -> {
+                int pos = getAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION && listener != null) {
+                    showPopupMenu(v, getItem(pos));
+                }
+            });
+        }
 
-            // Sự kiện Delete
-            if (btnDelete != null) {
-                btnDelete.setOnClickListener(v -> {
-                    int pos = getAdapterPosition();
-                    if (pos != RecyclerView.NO_POSITION && listener != null) {
-                        listener.onDeleteClick(getItem(pos));
+        private void showPopupMenu(View view, FoodItem food) {
+            PopupMenu popup = new PopupMenu(view.getContext(), view);
+            // Thêm 2 menu item bằng code (hoặc dùng menu xml cũng được)
+            popup.getMenu().add(0, 1, 0, "Sửa món ăn");
+            popup.getMenu().add(0, 2, 1, "Xóa món ăn");
+
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    if (item.getItemId() == 1) {
+                        listener.onEditClick(food);
+                        return true;
+                    } else if (item.getItemId() == 2) {
+                        listener.onDeleteClick(food);
+                        return true;
                     }
-                });
-            }
+                    return false;
+                }
+            });
+            popup.show();
         }
 
         public void bind(FoodItem food) {
             tvFoodName.setText(food.getName());
-            tvCategory.setText(food.getCategory());
             tvPrice.setText(formatCurrency(food.getPrice()));
+            tvCategory.setText(food.getCategory());
 
-            // --- SỬA LOGIC HIỂN THỊ ẢNH ---
             try {
-                // 1. Thử ép kiểu sang int (Nếu là ảnh mẫu có sẵn R.drawable.xxx)
                 int resId = Integer.parseInt(food.getImage());
                 imgFood.setImageResource(resId);
             } catch (NumberFormatException e) {
-                // 2. Nếu không phải số -> Là đường dẫn ảnh Admin chọn từ thư viện
                 try {
                     imgFood.setImageURI(Uri.parse(food.getImage()));
                 } catch (Exception ex) {
-                    // Fallback nếu ảnh lỗi
                     imgFood.setImageResource(R.drawable.ic_launcher_background);
                 }
             }
@@ -106,27 +111,21 @@ public class AdminFoodAdapter extends ListAdapter<FoodItem, AdminFoodAdapter.Vie
     }
 
     private String formatCurrency(double amount) {
-        NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-        return formatter.format(amount);
+        return NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).format(amount);
     }
 
     private static final DiffUtil.ItemCallback<FoodItem> DIFF_CALLBACK = new DiffUtil.ItemCallback<FoodItem>() {
         @Override
         public boolean areItemsTheSame(@NonNull FoodItem oldItem, @NonNull FoodItem newItem) {
-            // Kiểm tra null cho ID (phòng trường hợp ID chưa có)
             if (oldItem.getId() == null || newItem.getId() == null) return false;
             return oldItem.getId().equals(newItem.getId());
         }
 
         @Override
         public boolean areContentsTheSame(@NonNull FoodItem oldItem, @NonNull FoodItem newItem) {
-            // Sử dụng Objects.equals để so sánh an toàn (tránh NullPointerException)
-            // Thay vì old.getName().equals(new.getName())
-
             return java.util.Objects.equals(oldItem.getName(), newItem.getName()) &&
                     oldItem.getPrice() == newItem.getPrice() &&
-                    java.util.Objects.equals(oldItem.getImage(), newItem.getImage()) &&
-                    java.util.Objects.equals(oldItem.getCategory(), newItem.getCategory());
+                    java.util.Objects.equals(oldItem.getImage(), newItem.getImage());
         }
     };
 }

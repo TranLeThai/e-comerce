@@ -7,7 +7,7 @@ public class PrefManager {
     private static final String PREF_NAME = "EcommercePrefs";
     private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
     private static final String KEY_EMAIL = "email";
-    private static final String KEY_ROLE = "role"; // "admin" hoặc "customer"
+    private static final String KEY_ROLE = "role";
 
     private final SharedPreferences pref;
     private final SharedPreferences.Editor editor;
@@ -19,7 +19,6 @@ public class PrefManager {
         editor = pref.edit();
     }
 
-    // Hàm lưu thông tin khi đăng nhập thành công
     public void saveLogin(String email, String role) {
         editor.putBoolean(KEY_IS_LOGGED_IN, true);
         editor.putString(KEY_EMAIL, email);
@@ -35,9 +34,8 @@ public class PrefManager {
         return pref.getString(KEY_ROLE, "customer");
     }
 
-    // --- HÀM QUAN TRỌNG: ĐĂNG XUẤT ---
     public void logout() {
-        editor.clear(); // Xóa sạch dữ liệu
+        editor.clear();
         editor.apply();
     }
 }

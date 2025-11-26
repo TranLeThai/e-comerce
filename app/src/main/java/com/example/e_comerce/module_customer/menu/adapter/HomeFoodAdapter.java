@@ -20,10 +20,9 @@ public class HomeFoodAdapter extends RecyclerView.Adapter<HomeFoodAdapter.FoodVi
     private List<FoodItem> foodList;
     private OnFoodClickListener listener;
 
-    // Interface để MainActivity lắng nghe sự kiện
     public interface OnFoodClickListener {
-        void onAddToCartClick(FoodItem food); // Bấm nút cộng
-        void onItemClick(FoodItem food);      // Bấm vào xem chi tiết
+        void onAddToCartClick(FoodItem food);
+        void onItemClick(FoodItem food);
     }
 
     public HomeFoodAdapter(OnFoodClickListener listener) {
@@ -39,7 +38,6 @@ public class HomeFoodAdapter extends RecyclerView.Adapter<HomeFoodAdapter.FoodVi
     @NonNull
     @Override
     public FoodViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Lưu ý: Đảm bảo tên file layout xml của bạn đúng là 'item_food_home' hay 'item_food'
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_food, parent, false);
         return new FoodViewHolder(view);
     }
@@ -51,24 +49,17 @@ public class HomeFoodAdapter extends RecyclerView.Adapter<HomeFoodAdapter.FoodVi
         holder.tvName.setText(food.getName());
         holder.tvPrice.setText(String.format("%,.0f đ", food.getPrice()));
 
-        // --- CẬP NHẬT: LOGIC HIỂN THỊ ẢNH (QUAN TRỌNG) ---
-        // Vì 'food.getImage()' trả về String, nên ta cần kiểm tra xem nó là ID số hay đường dẫn URI
         try {
-            // 1. Thử ép kiểu sang số nguyên (Giả sử là R.drawable.ic_pizza = 213123...)
             int resId = Integer.parseInt(food.getImage());
             holder.imgFood.setImageResource(resId);
         } catch (NumberFormatException e) {
-            // 2. Nếu lỗi (không phải số), nghĩa là đường dẫn file ảnh (content://...)
-            // Lúc này dùng setImageURI để hiển thị ảnh Admin chọn
             try {
                 holder.imgFood.setImageURI(Uri.parse(food.getImage()));
             } catch (Exception ex) {
-                // Nếu ảnh lỗi link, hiển thị ảnh mặc định
                 holder.imgFood.setImageResource(R.drawable.ic_launcher_background);
             }
         }
 
-        // Sự kiện click
         holder.btnAddCart.setOnClickListener(v -> listener.onAddToCartClick(food));
         holder.itemView.setOnClickListener(v -> listener.onItemClick(food));
     }

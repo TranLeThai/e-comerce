@@ -4,6 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+
+import com.example.e_comerce.core.data.local.database.AppDatabase;
+import com.example.e_comerce.core.data.local.database.DatabaseSeeder;
+import com.example.e_comerce.module_customer.fragment.FavoriteFragment;
 import com.example.e_comerce.module_customer.fragment.ProfileFragment;
 import com.example.e_comerce.R;
 import com.example.e_comerce.module_customer.cart.CartActivity;
@@ -28,7 +32,9 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         }
 
-        // Bắt sự kiện chọn tab
+        AppDatabase db = AppDatabase.getInstance(this);
+        DatabaseSeeder.seed(this, db);
+
         bottomNav.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
             int id = item.getItemId();
@@ -40,8 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 selectedFragment = new CartFragment();
             }
             else if (id == R.id.nav_favorite) {
-                // Ví dụ Favorite Fragment
-                selectedFragment = new RevenueFragment(); // Tạm thời
+                selectedFragment = new FavoriteFragment();
             }
             else if (id == R.id.nav_profile) {
                 selectedFragment = new ProfileFragment();

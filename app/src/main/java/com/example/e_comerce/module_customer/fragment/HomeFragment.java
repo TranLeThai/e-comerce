@@ -1,13 +1,16 @@
 package com.example.e_comerce.module_customer.fragment;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout; // Import LinearLayout
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -37,10 +40,12 @@ public class HomeFragment extends Fragment {
     private RecyclerView rvFoodList;
     private HomeFoodAdapter foodAdapter;
 
+    // Các nút danh mục
+    private LinearLayout btnCatAll, btnCatChicken, btnCatBurger, btnCatPizza, btnCatNoodles;
+
     private CustomerFoodViewModel foodViewModel;
     private CartViewModel cartViewModel;
 
-    // Danh sách cho tìm kiếm
     private List<FoodItem> originalList = new ArrayList<>();
 
     public HomeFragment() { }
@@ -55,71 +60,98 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Ánh xạ View
+
+        initViews(view);
+        setupViewModels();
+        setupRecyclerView();
+        setupCategoryClicks();
+        setupSearchBar();
+    }
+
+    private void initViews(View view) {
         edtSearch = view.findViewById(R.id.edtSearch);
         rvFoodList = view.findViewById(R.id.rvFoodList);
         ImageView restaurantImage = view.findViewById(R.id.ivRestaurantImage);
 
-        // 2. Setup ViewModel
+        // Ánh xạ các nút danh mục
+        btnCatAll = view.findViewById(R.id.btnCatAll);
+        btnCatChicken = view.findViewById(R.id.btnCatChicken);
+        btnCatBurger = view.findViewById(R.id.btnCatBurger);
+        btnCatPizza = view.findViewById(R.id.btnCatPizza);
+        btnCatNoodles = view.findViewById(R.id.btnCatNoodles);
+
+        if (restaurantImage != null) {
+            restaurantImage.setOnClickListener(v ->
+                    Toast.makeText(getContext(), "Khuyến mãi Pizza mua 1 tặng 1!", Toast.LENGTH_SHORT).show()
+            );
+        }
+    }
+
+    private void setupViewModels() {
         cartViewModel = new ViewModelProvider(requireActivity(),
                 new CartViewModelFactory(requireActivity().getApplication())).get(CartViewModel.class);
 
         foodViewModel = new ViewModelProvider(this).get(CustomerFoodViewModel.class);
 
-        // 3. Setup RecyclerView
-        rvFoodList.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        foodAdapter = new HomeFoodAdapter(new HomeFoodAdapter.OnFoodClickListener() {
-            @Override
-            public void onAddToCartClick(FoodItem food) {
-                // Tạo CartItem từ FoodItem
-                CartItem item = new CartItem(
-                        food.getId(),
-                        food.getName(),
-                        food.getPrice(),
-                        1,
-                        food.getImage() // Dùng chuỗi ảnh (URI hoặc ID)
-                );
-                cartViewModel.addToCart(item);
-                Toast.makeText(getContext(), "Đã thêm " + food.getName(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onItemClick(FoodItem food) {
-                // Mở màn hình chi tiết
-                FoodDetailFragment fragment = FoodDetailFragment.newInstance(food);
-
-                getParentFragmentManager().beginTransaction()
-                        // ⚠️ SỬA QUAN TRỌNG: ID này phải khớp với XML của MainActivity
-                        .add(R.id.fragment_container, fragment)
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-
-        rvFoodList.setAdapter(foodAdapter);
-
-        // 4. Quan sát dữ liệu
+        // Quan sát dữ liệu
         foodViewModel.getAllFoods().observe(getViewLifecycleOwner(), foodEntities -> {
             if (foodEntities != null) {
                 originalList.clear();
                 for (FoodEntity entity : foodEntities) {
                     originalList.add(FoodMapper.toModel(entity));
                 }
-                // Ban đầu hiển thị tất cả
+                // Mặc định hiển thị tất cả
                 foodAdapter.setFoodList(new ArrayList<>(originalList));
             }
         });
+    }
 
-        // 5. Cài đặt Tìm kiếm
-        setupSearchBar();
+    private void setupRecyclerView() {
+        rvFoodList.setLayoutManager(new LinearLayoutManager(getContext()));
+        foodAdapter = new HomeFoodAdapter(new HomeFoodAdapter.OnFoodClickListener() {
+            @Override
+            public void onAddToCartClick(FoodItem food) {
+                CartItem item = new CartItem(food.getId(), food.getName(), food.getPrice(), 1, food.getImage());
+                cartViewModel.addToCart(item);
+                Toast.makeText(getContext(), "Đã thêm " + food.getName(), Toast.LENGTH_SHORT).show();
+            }
 
-        // 6. Sự kiện Click ảnh Banner
-        if (restaurantImage != null) {
-            restaurantImage.setOnClickListener(v ->
-                    Toast.makeText(getContext(), "Khuyến mãi Pizza mua 1 tặng 1!", Toast.LENGTH_SHORT).show()
-            );
+            @Override
+            public void onItemClick(FoodItem food) {
+                FoodDetailFragment fragment = FoodDetailFragment.newInstance(food);
+                getParentFragmentManager().beginTransaction()
+                        .add(R.id.nav_host_fragment, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+        rvFoodList.setAdapter(foodAdapter);
+    }
+
+    private void setupCategoryClicks() {
+        btnCatAll.setOnClickListener(v -> filterByCategory("ALL"));
+        btnCatChicken.setOnClickListener(v -> filterByCategory("Chicken"));
+        btnCatBurger.setOnClickListener(v -> filterByCategory("Burger"));
+        btnCatPizza.setOnClickListener(v -> filterByCategory("Pizza"));
+        btnCatNoodles.setOnClickListener(v -> filterByCategory("Noodles"));
+    }
+
+    private void filterByCategory(String category) {
+        List<FoodItem> filteredList = new ArrayList<>();
+
+        if (category.equals("ALL")) {
+            filteredList.addAll(originalList);
+            Toast.makeText(getContext(), "Tất cả món ăn", Toast.LENGTH_SHORT).show();
+        } else {
+            for (FoodItem item : originalList) {
+                if (item.getCategory() != null && item.getCategory().equalsIgnoreCase(category)) {
+                    filteredList.add(item);
+                }
+            }
+            Toast.makeText(getContext(), "Đang xem: " + category, Toast.LENGTH_SHORT).show();
         }
+
+        foodAdapter.setFoodList(filteredList);
     }
 
     private void setupSearchBar() {
@@ -139,7 +171,6 @@ public class HomeFragment extends Fragment {
 
     private void filterFoods(String keyword) {
         List<FoodItem> filteredList = new ArrayList<>();
-
         if (keyword == null || keyword.isEmpty()) {
             filteredList.addAll(originalList);
         } else {
@@ -151,5 +182,19 @@ public class HomeFragment extends Fragment {
             }
         }
         foodAdapter.setFoodList(filteredList);
+    }
+
+    private void showThongBao() {
+        if (getContext() == null) return;
+        Dialog dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.dialog_khuyenmai);
+        dialog.setCancelable(false);
+
+        Button btnClose = dialog.findViewById(R.id.btnClose);
+        if (btnClose != null) {
+            btnClose.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        dialog.show();
     }
 }

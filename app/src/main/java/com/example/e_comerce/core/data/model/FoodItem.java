@@ -9,16 +9,16 @@ public class FoodItem implements Serializable {
     private String image;
     private String category;
 
-    public FoodItem(String id, String name, double price, String image) { // Sửa constructor
+    public FoodItem(String id, String name, double price, String image, String category) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.image = image;
+        this.category = category;
     }
 
     // Sửa Getter
     public String getImage() { return image; }
-
     public String getCategory() { return category; }
     public String getId() { return id; }
     public String getName() { return name; }

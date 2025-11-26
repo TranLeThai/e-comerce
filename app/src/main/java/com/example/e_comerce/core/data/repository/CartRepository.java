@@ -27,22 +27,18 @@ public class CartRepository {
         return instance;
     }
 
-    // === GET ALL CART ITEMS ===
     public LiveData<List<CartItem>> getCartItems() {
         return db.cartDao().getAllCartItems();
     }
 
-    // === GET CART COUNT ===
     public LiveData<Integer> getCartItemCount() {
         return db.cartDao().getCartItemCount();
     }
 
-    // === GET TOTAL PRICE ===
     public LiveData<Double> getTotalPrice() {
         return db.cartDao().getTotalPrice();
     }
 
-    // === ADD TO CART (nếu có rồi thì tăng quantity) ===
     public void addToCart(CartItem newItem) {
         executor.execute(() -> {
             CartItem existingItem = db.cartDao().getCartItemById(newItem.getFoodId());
@@ -56,7 +52,6 @@ public class CartRepository {
         });
     }
 
-    // === UPDATE QUANTITY ===
     public void updateQuantity(String foodId, int newQuantity) {
         executor.execute(() -> {
             CartItem item = db.cartDao().getCartItemById(foodId);
@@ -71,12 +66,10 @@ public class CartRepository {
         });
     }
 
-    // === REMOVE FROM CART ===
     public void removeFromCart(CartItem item) {
         executor.execute(() -> db.cartDao().removeFromCart(item));
     }
 
-    // === CLEAR CART ===
     public void clearCart() {
         executor.execute(() -> db.cartDao().clearCart());
     }

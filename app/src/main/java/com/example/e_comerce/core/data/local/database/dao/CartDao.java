@@ -1,4 +1,3 @@
-// core/data/local/database/dao/CartDao.java
 package com.example.e_comerce.core.data.local.database.dao;
 
 import androidx.lifecycle.LiveData;

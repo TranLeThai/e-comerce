@@ -23,7 +23,6 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
     @NonNull
     @Override
     public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Tái sử dụng layout của Admin cho tiết kiệm công sức
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_admin_order, parent, false);
         return new OrderViewHolder(view);
     }
@@ -37,7 +36,6 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
         holder.tvOrderSummary.setText(order.itemsSummary);
         holder.tvOrderTotal.setText(String.format("%,.0f ₫", order.totalAmount));
 
-        // Màu sắc trạng thái
         holder.tvStatus.setText(order.status);
         if (order.status.equals("Đang chờ")) {
             holder.tvStatus.setTextColor(Color.parseColor("#FFA000")); // Cam
@@ -49,7 +47,6 @@ public class CustomerOrderAdapter extends RecyclerView.Adapter<CustomerOrderAdap
             holder.tvStatus.setTextColor(Color.BLACK);
         }
 
-        // Lưu ý: Không có sự kiện setOnClickListener ở đây vì Khách không được sửa
     }
 
     @Override

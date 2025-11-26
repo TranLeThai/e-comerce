@@ -53,7 +53,6 @@ public class OrderFoodAdapter extends ListAdapter<FoodItem, OrderFoodAdapter.VH>
 
         VH(View v) {
             super(v);
-            // Đảm bảo các ID này trùng khớp với file XML item_order_food.xml
             imgFood = v.findViewById(R.id.img_food);
             imgSelected = v.findViewById(R.id.img_selected);
             tvName = v.findViewById(R.id.tv_food_name);
@@ -71,23 +70,17 @@ public class OrderFoodAdapter extends ListAdapter<FoodItem, OrderFoodAdapter.VH>
             tvName.setText(food.getName());
             tvPrice.setText(formatCurrency(food.getPrice()));
 
-            // --- SỬA LOGIC HIỂN THỊ ẢNH ---
             try {
-                // 1. Thử ép kiểu sang int (Nếu là ảnh mẫu có sẵn R.drawable.xxx)
                 int resId = Integer.parseInt(food.getImage());
                 imgFood.setImageResource(resId);
             } catch (NumberFormatException e) {
-                // 2. Nếu không phải số -> Là đường dẫn ảnh Admin chọn từ thư viện
                 try {
                     imgFood.setImageURI(Uri.parse(food.getImage()));
                 } catch (Exception ex) {
-                    // Fallback nếu ảnh lỗi
                     imgFood.setImageResource(R.drawable.ic_launcher_background);
                 }
             }
 
-            // Kiểm tra xem món này có đang được chọn không
-            // Lưu ý: FoodItem cần override equals() hoặc so sánh ID thủ công để contains hoạt động đúng
             boolean isSelected = false;
             for (FoodItem item : selectedFoods) {
                 if (item.getId().equals(food.getId())) {

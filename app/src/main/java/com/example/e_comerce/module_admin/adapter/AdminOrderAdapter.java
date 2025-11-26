@@ -19,7 +19,6 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Or
     private List<OrderEntity> orderList;
     private final OnOrderClickListener listener; // Biến listener
 
-    // 2. Sửa Constructor để nhận Listener
     public AdminOrderAdapter(OnOrderClickListener listener) {
         this.listener = listener;
     }

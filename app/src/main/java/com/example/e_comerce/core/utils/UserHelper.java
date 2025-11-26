@@ -13,7 +13,6 @@ public class UserHelper {
     private static final String PREF_NAME = "UserData";
     private static final String KEY_USERS = "users";
 
-    // Lấy danh sách user
     public static JSONArray getUsers(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         String json = prefs.getString(KEY_USERS, "[]"); // nếu chưa có -> mảng rỗng
@@ -23,7 +22,6 @@ public class UserHelper {
             return new JSONArray();
         }
     }
-    // Lưu danh sách user
     public static void saveUsers(Context context, JSONArray users) {
         SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         prefs.edit().putString(KEY_USERS, users.toString()).apply();

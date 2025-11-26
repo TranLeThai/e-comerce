@@ -13,12 +13,24 @@ public class OrderEntity {
     public String status;
     public String itemsSummary;
 
+    // --- CÁC CỘT MỚI THÊM ---
+    public String paymentMethod;
+    public String note;
+    public double discount;
+    public String deliveryMethod;
+
     public OrderEntity() { }
 
-    public OrderEntity(String orderDate, double totalAmount, String status, String itemsSummary) {
+    // Cập nhật Constructor
+    public OrderEntity(String orderDate, double totalAmount, String status, String itemsSummary,
+                       String paymentMethod, String note, double discount, String deliveryMethod) {
         this.orderDate = orderDate;
         this.totalAmount = totalAmount;
         this.status = status;
         this.itemsSummary = itemsSummary;
+        this.paymentMethod = paymentMethod;
+        this.note = note;
+        this.discount = discount;
+        this.deliveryMethod = deliveryMethod;
     }
 }

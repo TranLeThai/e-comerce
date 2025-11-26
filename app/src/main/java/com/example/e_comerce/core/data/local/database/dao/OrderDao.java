@@ -29,4 +29,7 @@ public interface OrderDao {
     @Query("SELECT COUNT(*) FROM orders WHERE status = 'Hoàn thành'")
     LiveData<Integer> getCompletedOrderCount();
 
+    @Query("SELECT * FROM orders WHERE status = 'Hoàn thành'")
+    LiveData<List<OrderEntity>> getCompletedOrdersForAnalysis();
+
 }

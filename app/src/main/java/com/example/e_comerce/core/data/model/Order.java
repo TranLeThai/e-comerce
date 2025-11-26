@@ -1,11 +1,10 @@
-// core/data/model/Order.java
 package com.example.e_comerce.core.data.model;
 
 public class Order {
     private String id;
     private String customerName;
     private double totalPrice;
-    private String status; // "Chờ xác nhận", "Đang giao", "Hoàn thành", "Đã hủy"
+    private String status;
     private String date;
 
     public Order(String id, String customerName, double totalPrice, String status, String date) {

@@ -16,7 +16,6 @@ public class CustomerFoodViewModel extends AndroidViewModel {
         repository = FoodRepository.getInstance(application);
     }
 
-    // Lấy danh sách món ăn từ Database (Real-time)
     public LiveData<List<FoodEntity>> getAllFoods() {
         return repository.getLocalFoods();
     }

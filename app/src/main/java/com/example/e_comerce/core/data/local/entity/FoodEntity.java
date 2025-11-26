@@ -9,10 +9,9 @@ public class FoodEntity {
     private int id;
     private String name;
     private double price;
-    private String image; // <--- QUAN TRỌNG: Đổi thành String (lưu URI hoặc URL)
+    private String image;
     private String category;
 
-    // Constructor rỗng (Bắt buộc cho Room)
     public FoodEntity() { }
 
     // Constructor đầy đủ

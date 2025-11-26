@@ -32,14 +32,12 @@ public class ProfileFragment extends Fragment {
         LinearLayout btnHistory = view.findViewById(R.id.btnHistory);
         LinearLayout btnLogout = view.findViewById(R.id.btnLogout);
 
-        // 1. Hiển thị Email
         if (getContext() != null) {
             PrefManager prefManager = new PrefManager(getContext());
-            // tvEmail.setText(prefManager.getEmail()); // Nếu có lưu email
             tvEmail.setText("Xin chào, Khách hàng!");
         }
 
-        // 2. Chuyển sang màn hình Lịch sử (Vẫn giữ Activity cho lịch sử cũng được)
+
         btnHistory.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), OrderHistoryActivity.class);
             startActivity(intent);

@@ -39,7 +39,6 @@ public class FoodRepository {
         return instance;
     }
 
-    // === LOCAL DB ===
     public LiveData<List<FoodEntity>> getLocalFoods() {
         return db.foodDao().getAllFoods();
     }
@@ -71,11 +70,9 @@ public class FoodRepository {
         });
     }
 
-    // === FETCH API & CACHE LOCAL ===
     public LiveData<Boolean> fetchAndCacheFoods() {
         MutableLiveData<Boolean> result = new MutableLiveData<>();
 
-        // Kiểm tra xem RetrofitClient có null không để tránh crash nếu chưa config mạng
         if (RetrofitClient.getApiService() == null) {
             result.postValue(false);
             return result;
@@ -109,7 +106,6 @@ public class FoodRepository {
         return result;
     }
 
-    // === SEARCH ONLINE ===
     public LiveData<List<FoodItem>> searchFoods(String query) {
         MutableLiveData<List<FoodItem>> result = new MutableLiveData<>();
 

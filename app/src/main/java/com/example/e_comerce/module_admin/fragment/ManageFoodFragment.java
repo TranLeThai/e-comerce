@@ -52,14 +52,12 @@ public class ManageFoodFragment extends Fragment {
             @Override
             public void onEditClick(FoodItem food) {
                 Intent intent = new Intent(requireContext(), AddEditFoodActivity.class);
-                // SỬA LỖI Ở ĐÂY: Bỏ (Parcelable), truyền String trực tiếp
                 intent.putExtra("food_id", food.getId());
                 startActivity(intent);
             }
 
             @Override
             public void onDeleteClick(FoodItem food) {
-                // Gọi ViewModel để xóa theo ID
                 viewModel.deleteFood(food.getId());
             }
         });

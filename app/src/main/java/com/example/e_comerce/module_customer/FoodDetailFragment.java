@@ -6,7 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -18,18 +20,23 @@ import com.example.e_comerce.core.data.local.database.CartViewModelFactory;
 import com.example.e_comerce.core.data.local.entity.CartItem;
 import com.example.e_comerce.core.data.model.FoodItem;
 import com.example.e_comerce.core.viewmodel.CartViewModel;
-
-import java.io.Serializable;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class FoodDetailFragment extends Fragment {
 
     private FoodItem food;
+    private int quantity = 1;
+    private String selectedSize = "Vừa";
+    private double basePrice = 0; // Giá gốc của món ăn
+    private double currentPrice = 0; // Giá sau khi cộng trừ Size
 
-    // Hàm static để nhận dữ liệu từ MainActivity gửi sang
+    private TextView tvQuantity, tvDetailPrice;
+    private Button btnAdd;
+
     public static FoodDetailFragment newInstance(FoodItem food) {
         FoodDetailFragment fragment = new FoodDetailFragment();
         Bundle args = new Bundle();
-        // FoodItem đã implements Serializable nên không cần ép kiểu thủ công
         args.putSerializable("food_object", food);
         fragment.setArguments(args);
         return fragment;
@@ -46,56 +53,100 @@ public class FoodDetailFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_food_detail, container, false);
+        return inflater.inflate(R.layout.fragment_food_detail, container, false);
+    }
 
-        // Ánh xạ View
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         ImageView img = view.findViewById(R.id.imgDetail);
         TextView tvName = view.findViewById(R.id.tvDetailName);
-        TextView tvPrice = view.findViewById(R.id.tvDetailPrice);
-        Button btnAdd = view.findViewById(R.id.btnAddDetail);
+        tvDetailPrice = view.findViewById(R.id.tvDetailPrice);
+        tvQuantity = view.findViewById(R.id.tvQuantity);
+        btnAdd = view.findViewById(R.id.btnAddDetail);
+        ImageButton btnMinus = view.findViewById(R.id.btnMinus);
+        ImageButton btnPlus = view.findViewById(R.id.btnPlus);
+        RadioGroup radioGroup = view.findViewById(R.id.radioGroupSize);
+        androidx.appcompat.widget.Toolbar toolbar = view.findViewById(R.id.toolbarDetail);
 
-        // Hiển thị dữ liệu
         if (food != null) {
             tvName.setText(food.getName());
-            tvPrice.setText(String.format("%,.0f đ", food.getPrice()));
 
-            // --- SỬA LOGIC HIỂN THỊ ẢNH ---
+            // Lưu giá gốc
+            basePrice = food.getPrice();
+            currentPrice = basePrice;
+            updatePriceButton();
+
             try {
-                // 1. Thử coi nó là số (Resource ID - Ảnh có sẵn)
                 int resId = Integer.parseInt(food.getImage());
                 img.setImageResource(resId);
-            } catch (NumberFormatException e) {
-                // 2. Nếu lỗi (không phải số) -> Dùng URI (Ảnh Admin chọn)
+            } catch (Exception e) {
                 try {
                     img.setImageURI(Uri.parse(food.getImage()));
                 } catch (Exception ex) {
-                    img.setImageResource(R.drawable.ic_launcher_background); // Ảnh fallback
+                    img.setImageResource(R.drawable.ic_launcher_background);
                 }
             }
         }
 
-        // Setup ViewModel
-        CartViewModel cartViewModel = new ViewModelProvider(requireActivity(),
-                new CartViewModelFactory(requireActivity().getApplication())).get(CartViewModel.class);
+        toolbar.setNavigationOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        // Click thêm vào giỏ
-        btnAdd.setOnClickListener(v -> {
-            if (food != null) {
-                CartItem item = new CartItem(
-                        food.getId(),
-                        food.getName(),
-                        food.getPrice(),
-                        1,
-                        food.getImage() // --- SỬA: Truyền thẳng String ảnh
-                );
-                cartViewModel.addToCart(item);
-                Toast.makeText(getContext(), "Đã thêm vào giỏ!", Toast.LENGTH_SHORT).show();
+        btnPlus.setOnClickListener(v -> {
+            quantity++;
+            tvQuantity.setText(String.valueOf(quantity));
+            updatePriceButton();
+        });
 
-                // Quay lại màn hình trước
-                getParentFragmentManager().popBackStack();
+        btnMinus.setOnClickListener(v -> {
+            if (quantity > 1) {
+                quantity--;
+                tvQuantity.setText(String.valueOf(quantity));
+                updatePriceButton();
             }
         });
 
-        return view;
+        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.rbSmall) {
+                selectedSize = "Nhỏ";
+                currentPrice = basePrice - 20000;
+            } else if (checkedId == R.id.rbMedium) {
+                selectedSize = "Vừa";
+                currentPrice = basePrice; // Giữ nguyên
+            } else if (checkedId == R.id.rbLarge) {
+                selectedSize = "Lớn";
+                currentPrice = basePrice + 10000;
+            }
+            updatePriceButton();
+        });
+
+        CartViewModel cartViewModel = new ViewModelProvider(requireActivity(),
+                new CartViewModelFactory(requireActivity().getApplication())).get(CartViewModel.class);
+
+        btnAdd.setOnClickListener(v -> {
+            if (food != null) {
+                String nameWithSize = food.getName() + " (" + selectedSize + ")";
+
+                CartItem item = new CartItem(
+                        food.getId(),
+                        nameWithSize,
+                        currentPrice,
+                        quantity,
+                        food.getImage()
+                );
+                cartViewModel.addToCart(item);
+                Toast.makeText(getContext(), "Đã thêm: " + nameWithSize, Toast.LENGTH_SHORT).show();
+                getParentFragmentManager().popBackStack();
+            }
+        });
+    }
+
+    private void updatePriceButton() {
+        double total = currentPrice * quantity;
+        String priceStr = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).format(currentPrice);
+        String totalStr = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).format(total);
+
+        tvDetailPrice.setText(priceStr);
+        btnAdd.setText("Thêm vào giỏ - " + totalStr);
     }
 }

@@ -77,10 +77,8 @@ public class ManageOrderFragment extends Fragment {
 
         spinnerFilter.setAdapter(adapterSpinner);
 
-        // Mặc định chọn "Tất cả" nhưng không kích hoạt lọc ngay lập tức để tránh load 2 lần
         spinnerFilter.setText(filterOptions[0], false);
 
-        // Bắt sự kiện khi chọn item trong spinner
         spinnerFilter.setOnItemClickListener((parent, view, position, id) -> {
             String selectedStatus = filterOptions[position];
             loadOrders(selectedStatus);
@@ -89,10 +87,7 @@ public class ManageOrderFragment extends Fragment {
 
     // --- HÀM TẢI DỮ LIỆU ---
     private void loadOrders(String status) {
-        // Xóa các observer cũ để tránh chồng chéo dữ liệu khi switch qua lại
         viewModel.getAllOrders().removeObservers(getViewLifecycleOwner());
-        // Lưu ý: Với getOrdersByStatus trả về LiveData mới mỗi lần gọi,
-        // nên việc removeObservers triệt để ở đây chỉ mang tính tương đối trong scope cơ bản này.
 
         if (status.equals("Tất cả")) {
             viewModel.getAllOrders().observe(getViewLifecycleOwner(), this::updateList);

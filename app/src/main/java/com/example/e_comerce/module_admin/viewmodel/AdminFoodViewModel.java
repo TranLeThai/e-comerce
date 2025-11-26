@@ -29,8 +29,6 @@ public class AdminFoodViewModel extends AndroidViewModel {
         foodDao = db.foodDao();
         executorService = Executors.newSingleThreadExecutor();
 
-        // SỬA: Dùng FoodMapper để chuyển đổi Entity -> Model
-        // Không còn lỗi getImageResId hay ép kiểu sai nữa
         allFoods = Transformations.map(foodDao.getAllFoods(), entities -> {
             List<FoodItem> models = new ArrayList<>();
             if (entities != null) {
@@ -46,7 +44,6 @@ public class AdminFoodViewModel extends AndroidViewModel {
         return allFoods;
     }
 
-    // SỬA: Dùng Mapper cho hàm lấy chi tiết
     public LiveData<FoodItem> getFoodById(String id) {
         return Transformations.map(foodDao.getFoodById(id), entity -> {
             if (entity == null) return null;
@@ -54,14 +51,12 @@ public class AdminFoodViewModel extends AndroidViewModel {
         });
     }
 
-    // SỬA: Hàm thêm món (Dùng Mapper)
-    public void insertFood(FoodEntity food) { // Giữ nguyên nhận FoodEntity từ Activity
+    public void insertFood(FoodEntity food) {
         executorService.execute(() -> {
             foodDao.insertFood(food);
         });
     }
 
-    // Nếu bạn muốn truyền FoodItem vào thì dùng hàm này:
     public void addFood(FoodItem food) {
         executorService.execute(() -> {
             FoodEntity entity = FoodMapper.toEntity(food);
@@ -69,12 +64,9 @@ public class AdminFoodViewModel extends AndroidViewModel {
         });
     }
 
-    // SỬA: Hàm cập nhật
     public void updateFood(FoodItem food) {
         executorService.execute(() -> {
             FoodEntity entity = FoodMapper.toEntity(food);
-            // QUAN TRỌNG: Mapper toEntity thường tạo object mới không có ID.
-            // Khi update phải set lại ID cũ để Room biết đường ghi đè.
             try {
                 if (food.getId() != null) {
                     entity.setId(Integer.parseInt(food.getId()));
@@ -86,7 +78,6 @@ public class AdminFoodViewModel extends AndroidViewModel {
         });
     }
 
-    // Hàm xóa theo ID (Khuyên dùng)
     public void deleteFood(String id) {
         executorService.execute(() -> {
             foodDao.deleteFoodById(id);

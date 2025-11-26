@@ -38,7 +38,6 @@ public class CartViewModel extends AndroidViewModel {
         return totalPrice;
     }
 
-    // === ADD / UPDATE / REMOVE ===
     public void addToCart(CartItem item) {
         repository.addToCart(item);
     }

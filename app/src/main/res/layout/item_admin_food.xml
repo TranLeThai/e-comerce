@@ -47,7 +47,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="Món Việt"
+                android:text=""
                 android:textSize="13sp"
                 android:textColor="#666666" />
 
@@ -69,7 +69,7 @@
             android:id="@+id/btn_edit"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/ic_edit"
+            android:src="@drawable/ic_more_vert"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Chỉnh sửa"
             android:layout_gravity="center_vertical" />

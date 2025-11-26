@@ -6,10 +6,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.e_comerce.R;
-import com.example.e_comerce.core.viewmodel.CustomerFoodViewModel; // Tái sử dụng hoặc tạo mới
 import com.example.e_comerce.module_customer.menu.adapter.CustomerOrderAdapter;
-// Lưu ý: Bạn có thể tái sử dụng AdminOrderViewModel hoặc tạo CustomerOrderViewModel.
-// Để nhanh, ta dùng AdminOrderViewModel vì nó đã có hàm lấy danh sách.
 import com.example.e_comerce.module_admin.viewmodel.AdminOrderViewModel;
 
 public class OrderHistoryActivity extends AppCompatActivity {

@@ -1,0 +1,92 @@
+[
+  {
+    "name": "Phở Bò Đặc Biệt",
+    "price": 55000,
+    "category": "Noodles",
+    "image": "ic_pho_bo"
+  },
+  {
+    "name": "Bún Bò Huế",
+    "price": 60000,
+    "category": "Noodles",
+    "image": "ic_bun_bo"
+  },
+  {
+    "name": "Mì Ý Sốt Bò Bằm",
+    "price": 45000,
+    "category": "Noodles",
+    "image": "ic_spaghetti"
+  },
+  {
+    "name": "Hủ Tiếu Nam Vang",
+    "price": 50000,
+    "category": "Noodles",
+    "image": "ic_hu_tieu"
+  },
+  {
+    "name": "Cơm Gà Xối Mỡ",
+    "price": 45000,
+    "category": "Chicken",
+    "image": "ic_com_ga"
+  },
+  {
+    "name": "Gà Rán Giòn Cay",
+    "price": 38000,
+    "category": "Chicken",
+    "image": "ic_fried_chicken"
+  },
+  {
+    "name": "Cánh Gà Sốt Mắm",
+    "price": 45000,
+    "category": "Chicken",
+    "image": "ic_canh_ga"
+  },
+  {
+    "name": "Gà Nướng Mật Ong",
+    "price": 120000,
+    "category": "Chicken",
+    "image": "ic_ga_nuong"
+  },
+  {
+    "name": "Bánh Mì Thập Cẩm",
+    "price": 25000,
+    "category": "Burger",
+    "image": "ic_banh_mi"
+  },
+  {
+    "name": "Burger Bò Phô Mai",
+    "price": 65000,
+    "category": "Burger",
+    "image": "ic_burger_beef"
+  },
+  {
+    "name": "Cà Phê Sữa Đá",
+    "price": 25000,
+    "category": "Drinks",
+    "image": "ic_coffee"
+  },
+  {
+    "name": "Trà Sữa Trân Châu",
+    "price": 40000,
+    "category": "Drinks",
+    "image": "ic_milk_tea"
+  },
+  {
+    "name": "Bánh Tráng Trộn",
+    "price": 20000,
+    "category": "Snacks",
+    "image": "ic_banh_trang"
+  },
+  {
+    "name": "Pizza Hải Sản",
+    "price": 150000,
+    "category": "Pizza",
+    "image": "ic_pizza_seafood"
+  },
+  {
+    "name": "Pizza Xúc Xích",
+    "price": 130000,
+    "category": "Pizza",
+    "image": "ic_pizza_xuc_xich"
+  }
+]
