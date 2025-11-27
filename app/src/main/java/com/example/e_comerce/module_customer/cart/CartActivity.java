@@ -16,6 +16,9 @@ import com.example.e_comerce.module_customer.cart.adapter.CartAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+// Bổ sung import cho interface mới
+import com.example.e_comerce.module_customer.cart.adapter.CartAdapter.OnItemInteractionListener;
+
 public class CartActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
@@ -39,8 +42,9 @@ public class CartActivity extends AppCompatActivity {
         db = AppDatabase.getInstance(this);
 
         // 3. Setup RecyclerView
-        adapter = new CartAdapter(new ArrayList<>(), this::removeItem);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        adapter = new CartAdapter(new ArrayList<>(), createInteractionListener());
         recyclerView.setAdapter(adapter);
 
         // 4. Quan sát dữ liệu
@@ -48,7 +52,8 @@ public class CartActivity extends AppCompatActivity {
             this.currentCartList = cartItems;
 
             if (adapter != null) {
-                adapter = new CartAdapter(cartItems, this::removeItem);
+                // Dùng listener đã tạo để không báo lỗi
+                adapter = new CartAdapter(cartItems, createInteractionListener());
                 recyclerView.setAdapter(adapter);
             }
 
@@ -59,9 +64,30 @@ public class CartActivity extends AppCompatActivity {
         btnCheckout.setOnClickListener(v -> handleCheckout());
     }
 
+    private OnItemInteractionListener createInteractionListener() {
+        return new OnItemInteractionListener() {
+            @Override
+            public void onRemoveClick(CartItem item) {
+                removeItem(item);
+            }
+
+            @Override
+            public void onQuantityChange(CartItem item, int newQuantity) {
+                onQuantityChange(item, newQuantity);
+            }
+        };
+    }
+
     private void removeItem(CartItem item) {
         new Thread(() -> db.cartDao().removeFromCart(item)).start();
         Toast.makeText(this, "Đã xóa khỏi giỏ hàng", Toast.LENGTH_SHORT).show();
+    }
+
+    private void onQuantityChange(CartItem item, int newQuantity) {
+        CartItem updatedItem = new CartItem(
+                item.getFoodId(), item.getName(), item.getPrice(), newQuantity, item.getImage()
+        );
+        new Thread(() -> db.cartDao().updateCartItem(updatedItem)).start();
     }
 
     private void updateTotalPrice(List<CartItem> cartItems) {
@@ -80,7 +106,6 @@ public class CartActivity extends AppCompatActivity {
             return;
         }
 
-        // 1. Tính tổng tiền & Tóm tắt món
         double totalMoney = 0;
         StringBuilder summaryBuilder = new StringBuilder();
 
@@ -95,10 +120,10 @@ public class CartActivity extends AppCompatActivity {
             summary = summaryBuilder.substring(0, summaryBuilder.length() - 2);
         }
 
-        // 2. Chuyển sang màn hình Checkout
+        // Chuyển sang màn hình Checkout
         Intent intent = new Intent(CartActivity.this, CheckoutActivity.class);
-        intent.putExtra("TOTAL_PRICE", totalMoney);   // Gửi tổng tiền
-        intent.putExtra("ITEMS_SUMMARY", summary);    // Gửi danh sách món
+        intent.putExtra("TOTAL_PRICE", totalMoney);
+        intent.putExtra("ITEMS_SUMMARY", summary);
         startActivity(intent);
     }
 }

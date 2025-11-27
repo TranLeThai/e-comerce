@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper; // Cần import này
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,18 +26,17 @@ import com.example.e_comerce.module_customer.cart.CheckoutActivity;
 import com.example.e_comerce.module_customer.cart.adapter.CartAdapter;
 
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class CartFragment extends Fragment {
+// Sửa lại class để implement Listener mới từ CartAdapter
+public class CartFragment extends Fragment implements CartAdapter.OnItemInteractionListener {
 
     private RecyclerView recyclerView;
     private TextView textTotalPrice;
     private Button btnCheckout;
-    private ImageView btnDeleteAll; // Nút xóa hết
+    private ImageView btnDeleteAll;
     private CartAdapter adapter;
     private AppDatabase db;
     private List<CartItem> currentCartList;
@@ -58,17 +58,25 @@ public class CartFragment extends Fragment {
 
         db = AppDatabase.getInstance(requireContext());
 
-        adapter = new CartAdapter(new ArrayList<>(), this::confirmRemoveItem);
+        // 1. Setup RecyclerView
+        adapter = new CartAdapter(new ArrayList<>(), this); // Dùng 'this' vì Fragment implement Listener
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
+        // 2. Kích hoạt Vuốt xóa (Swipe-to-Delete)
+        setupItemTouchHelper();
+
+        // 3. Quan sát dữ liệu
         db.cartDao().getAllCartItems().observe(getViewLifecycleOwner(), cartItems -> {
             this.currentCartList = cartItems;
-            adapter = new CartAdapter(cartItems, this::confirmRemoveItem);
-            recyclerView.setAdapter(adapter);
+
+            if (adapter != null) {
+                adapter.setCartItems(cartItems);
+            }
 
             updateTotalPrice(cartItems);
 
+            // Cập nhật trạng thái nút (Giữ nguyên)
             if (cartItems == null || cartItems.isEmpty()) {
                 btnDeleteAll.setVisibility(View.GONE);
                 btnCheckout.setEnabled(false);
@@ -81,25 +89,44 @@ public class CartFragment extends Fragment {
         });
 
         btnCheckout.setOnClickListener(v -> handleCheckout());
-
-        // Sự kiện Xóa Hết
         btnDeleteAll.setOnClickListener(v -> showClearCartDialog());
     }
 
-    // Hộp thoại xác nhận xóa 1 món
-    private void confirmRemoveItem(CartItem item) {
+
+    @Override
+    public void onRemoveClick(CartItem item) {
+        // Hiện hộp thoại xác nhận
+        showConfirmRemoveDialog(item);
+    }
+
+    @Override
+    public void onQuantityChange(CartItem item, int newQuantity) {
+        CartItem updatedItem = new CartItem(
+                item.getFoodId(),
+                item.getName(),
+                item.getPrice(),
+                newQuantity,
+                item.getImage()
+        );
+        new Thread(() -> db.cartDao().updateCartItem(updatedItem)).start();
+    }
+
+
+    private void directRemoveItem(CartItem item) {
+        new Thread(() -> db.cartDao().removeFromCart(item)).start();
+    }
+
+    private void showConfirmRemoveDialog(CartItem item) {
         new AlertDialog.Builder(getContext())
                 .setTitle("Xóa món ăn")
                 .setMessage("Bạn muốn xóa '" + item.getName() + "' khỏi giỏ?")
                 .setPositiveButton("Xóa", (dialog, which) -> {
-                    new Thread(() -> db.cartDao().removeFromCart(item)).start();
-                    Toast.makeText(getContext(), "Đã xóa", Toast.LENGTH_SHORT).show();
+                    directRemoveItem(item);
                 })
                 .setNegativeButton("Hủy", null)
                 .show();
     }
 
-    // Hộp thoại xác nhận xóa hết giỏ
     private void showClearCartDialog() {
         new AlertDialog.Builder(getContext())
                 .setTitle("Xóa giỏ hàng")
@@ -129,7 +156,6 @@ public class CartFragment extends Fragment {
             return;
         }
 
-        // 1. Tính tổng tiền
         double totalMoney = 0;
         StringBuilder summaryBuilder = new StringBuilder();
         for (CartItem item : currentCartList) {
@@ -138,10 +164,30 @@ public class CartFragment extends Fragment {
         }
         String summary = summaryBuilder.length() > 2 ? summaryBuilder.substring(0, summaryBuilder.length() - 2) : "";
 
-        // 2. Chuyển sang màn hình CheckoutActivity
         Intent intent = new Intent(getContext(), CheckoutActivity.class);
         intent.putExtra("TOTAL_PRICE", totalMoney);
         intent.putExtra("ITEMS_SUMMARY", summary);
         startActivity(intent);
+    }
+
+    private void setupItemTouchHelper() {
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                CartItem item = currentCartList.get(position);
+
+                directRemoveItem(item);
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 }
